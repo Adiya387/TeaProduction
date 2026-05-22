@@ -1,0 +1,1968 @@
+{
+    "tables_list": [
+        "AuditLog",
+        "Auth_EmployeeProfile",
+        "Credits",
+        "FinancialReports",
+        "django_migrations",
+        "django_content_type",
+        "CreditRepayments",
+        "auth_permission",
+        "ProductionRequests",
+        "auth_group",
+        "auth_group_permissions",
+        "auth_user",
+        "auth_user_groups",
+        "auth_user_user_permissions",
+        "django_admin_log",
+        "sysdiagrams",
+        "django_session",
+        "Units",
+        "Positions",
+        "RawMaterials",
+        "FinishedProducts",
+        "Employees",
+        "Budget",
+        "Ingredients",
+        "RawMaterialPurchases",
+        "Production",
+        "Sales",
+        "SalaryPayments"
+    ],
+    "columns": [
+        {
+            "TABLE_NAME": "AuditLog",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "AuditLog",
+            "COLUMN_NAME": "action",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 255,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "AuditLog",
+            "COLUMN_NAME": "timestamp",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "AuditLog",
+            "COLUMN_NAME": "details",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "AuditLog",
+            "COLUMN_NAME": "user_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Auth_EmployeeProfile",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Auth_EmployeeProfile",
+            "COLUMN_NAME": "role",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 20,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Auth_EmployeeProfile",
+            "COLUMN_NAME": "employee_record_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Auth_EmployeeProfile",
+            "COLUMN_NAME": "user_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_group",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_group",
+            "COLUMN_NAME": "name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_group_permissions",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_group_permissions",
+            "COLUMN_NAME": "group_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_group_permissions",
+            "COLUMN_NAME": "permission_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_permission",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_permission",
+            "COLUMN_NAME": "name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 255,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_permission",
+            "COLUMN_NAME": "content_type_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_permission",
+            "COLUMN_NAME": "codename",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "password",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 128,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "last_login",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "is_superuser",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "username",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "first_name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "last_name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "email",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 254,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "is_staff",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "is_active",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user",
+            "COLUMN_NAME": "date_joined",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user_groups",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_user_groups",
+            "COLUMN_NAME": "user_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user_groups",
+            "COLUMN_NAME": "group_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user_user_permissions",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "auth_user_user_permissions",
+            "COLUMN_NAME": "user_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "auth_user_user_permissions",
+            "COLUMN_NAME": "permission_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Budget",
+            "COLUMN_NAME": "BudgetID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Budget",
+            "COLUMN_NAME": "TotalBudget",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "CreditRepayments",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "CreditRepayments",
+            "COLUMN_NAME": "amount",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "CreditRepayments",
+            "COLUMN_NAME": "date",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "CreditRepayments",
+            "COLUMN_NAME": "credit_id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "CreditID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "Amount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "InterestRate",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "RemainingAmount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "CreditDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Credits",
+            "COLUMN_NAME": "IsClosed",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "action_time",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "object_id",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "object_repr",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 200,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "action_flag",
+            "DATA_TYPE": "smallint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "change_message",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "content_type_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_admin_log",
+            "COLUMN_NAME": "user_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_content_type",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "django_content_type",
+            "COLUMN_NAME": "app_label",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_content_type",
+            "COLUMN_NAME": "model",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_migrations",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "django_migrations",
+            "COLUMN_NAME": "app",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 255,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_migrations",
+            "COLUMN_NAME": "name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 255,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_migrations",
+            "COLUMN_NAME": "applied",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_session",
+            "COLUMN_NAME": "session_key",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 40,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "django_session",
+            "COLUMN_NAME": "session_data",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "django_session",
+            "COLUMN_NAME": "expire_date",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "EmployeeID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "FullName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "PositionID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "Salary",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "Address",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 200,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Employees",
+            "COLUMN_NAME": "Phone",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "date",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "income",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "expense",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "profit",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "budget_after",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "operation_type",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinancialReports",
+            "COLUMN_NAME": "related_request_id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinishedProducts",
+            "COLUMN_NAME": "ProductID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "FinishedProducts",
+            "COLUMN_NAME": "ProductName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinishedProducts",
+            "COLUMN_NAME": "UnitID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinishedProducts",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "FinishedProducts",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Ingredients",
+            "COLUMN_NAME": "IngredientID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Ingredients",
+            "COLUMN_NAME": "ProductID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Ingredients",
+            "COLUMN_NAME": "RawMaterialID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Ingredients",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Positions",
+            "COLUMN_NAME": "PositionID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Positions",
+            "COLUMN_NAME": "PositionName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "ProductionID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "ProductID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "ProductionDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "EmployeeID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Production",
+            "COLUMN_NAME": "RelatedRequestID",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "quantity",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "applicant_full_name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 255,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "status",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "reject_reason",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "created_at",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "updated_at",
+            "DATA_TYPE": "datetimeoffset",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "estimated_cost",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "estimated_profit",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "final_budget",
+            "DATA_TYPE": "numeric",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "ProductionRequests",
+            "COLUMN_NAME": "product_id",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "PurchaseID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "RawMaterialID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "PurchaseDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "EmployeeID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterialPurchases",
+            "COLUMN_NAME": "RelatedRequestID",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterials",
+            "COLUMN_NAME": "RawMaterialID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "RawMaterials",
+            "COLUMN_NAME": "RawMaterialName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterials",
+            "COLUMN_NAME": "UnitID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterials",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "RawMaterials",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "SalaryPayments",
+            "COLUMN_NAME": "PaymentID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "SalaryPayments",
+            "COLUMN_NAME": "EmployeeID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "SalaryPayments",
+            "COLUMN_NAME": "Amount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "SalaryPayments",
+            "COLUMN_NAME": "PaymentDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "SaleID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "ProductID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "SaleDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "EmployeeID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Sales",
+            "COLUMN_NAME": "RelatedRequestID",
+            "DATA_TYPE": "bigint",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "sysdiagrams",
+            "COLUMN_NAME": "name",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 128,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "sysdiagrams",
+            "COLUMN_NAME": "principal_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "sysdiagrams",
+            "COLUMN_NAME": "diagram_id",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "sysdiagrams",
+            "COLUMN_NAME": "version",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "sysdiagrams",
+            "COLUMN_NAME": "definition",
+            "DATA_TYPE": "varbinary",
+            "CHARACTER_MAXIMUM_LENGTH": -1,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "Units",
+            "COLUMN_NAME": "UnitID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 1
+        },
+        {
+            "TABLE_NAME": "Units",
+            "COLUMN_NAME": "UnitName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "CreditID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "Amount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "InterestRate",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "RemainingAmount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "IsClosed",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "CreditDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditFullReport",
+            "COLUMN_NAME": "PaidAmount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "CreditID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 1,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "Amount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "InterestRate",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "RemainingAmount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "IsClosed",
+            "DATA_TYPE": "bit",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_CreditReport",
+            "COLUMN_NAME": "CreditDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_FinishedProductsReport",
+            "COLUMN_NAME": "ProductName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_FinishedProductsReport",
+            "COLUMN_NAME": "UnitName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_FinishedProductsReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_FinishedProductsReport",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProductionReport",
+            "COLUMN_NAME": "ProductionID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProductionReport",
+            "COLUMN_NAME": "Product",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProductionReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProductionReport",
+            "COLUMN_NAME": "ProductionDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProductionReport",
+            "COLUMN_NAME": "Employee",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "SaleID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "ProductName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "Revenue",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "EstimatedCost",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "Profit",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "SaleDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_ProfitReport",
+            "COLUMN_NAME": "Fullname",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "PurchaseID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "RawMaterialName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "PurchaseDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_PurchasesReport",
+            "COLUMN_NAME": "Fullname",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_RawMaterialsReport",
+            "COLUMN_NAME": "RawMaterialName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_RawMaterialsReport",
+            "COLUMN_NAME": "UnitName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 50,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_RawMaterialsReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_RawMaterialsReport",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalaryReport",
+            "COLUMN_NAME": "PaymentID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalaryReport",
+            "COLUMN_NAME": "Fullname",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalaryReport",
+            "COLUMN_NAME": "PositionName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 100,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalaryReport",
+            "COLUMN_NAME": "Amount",
+            "DATA_TYPE": "decimal",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalaryReport",
+            "COLUMN_NAME": "PaymentDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "YES",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "SaleID",
+            "DATA_TYPE": "int",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "ProductName",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "Quantity",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "TotalAmount",
+            "DATA_TYPE": "float",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "SaleDate",
+            "DATA_TYPE": "datetime",
+            "CHARACTER_MAXIMUM_LENGTH": null,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        },
+        {
+            "TABLE_NAME": "vw_SalesReport",
+            "COLUMN_NAME": "Fullname",
+            "DATA_TYPE": "nvarchar",
+            "CHARACTER_MAXIMUM_LENGTH": 150,
+            "IS_NULLABLE": "NO",
+            "IsIdentity": 0,
+            "IsPrimaryKey": 0
+        }
+    ],
+    "foreign_keys": [
+        {
+            "ForeignKey": "auth_permission_content_type_id_2f476e4b_fk_django_content_type_id",
+            "ParentTable": "auth_permission",
+            "ParentColumn": "content_type_id",
+            "ReferencedTable": "django_content_type",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "django_admin_log_content_type_id_c4bce8eb_fk_django_content_type_id",
+            "ParentTable": "django_admin_log",
+            "ParentColumn": "content_type_id",
+            "ReferencedTable": "django_content_type",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_user_user_permissions_permission_id_1fbb5f2c_fk_auth_permission_id",
+            "ParentTable": "auth_user_user_permissions",
+            "ParentColumn": "permission_id",
+            "ReferencedTable": "auth_permission",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_group_permissions_permission_id_84c5c92e_fk_auth_permission_id",
+            "ParentTable": "auth_group_permissions",
+            "ParentColumn": "permission_id",
+            "ReferencedTable": "auth_permission",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "FinancialReports_related_request_id_4abf2693_fk_ProductionRequests_id",
+            "ParentTable": "FinancialReports",
+            "ParentColumn": "related_request_id",
+            "ReferencedTable": "ProductionRequests",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_user_groups_group_id_97559544_fk_auth_group_id",
+            "ParentTable": "auth_user_groups",
+            "ParentColumn": "group_id",
+            "ReferencedTable": "auth_group",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_group_permissions_group_id_b120cbf9_fk_auth_group_id",
+            "ParentTable": "auth_group_permissions",
+            "ParentColumn": "group_id",
+            "ReferencedTable": "auth_group",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "AuditLog_user_id_b0fc8263_fk_auth_user_id",
+            "ParentTable": "AuditLog",
+            "ParentColumn": "user_id",
+            "ReferencedTable": "auth_user",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "Auth_EmployeeProfile_user_id_497968fb_fk_auth_user_id",
+            "ParentTable": "Auth_EmployeeProfile",
+            "ParentColumn": "user_id",
+            "ReferencedTable": "auth_user",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_user_user_permissions_user_id_a95ead1b_fk_auth_user_id",
+            "ParentTable": "auth_user_user_permissions",
+            "ParentColumn": "user_id",
+            "ReferencedTable": "auth_user",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "auth_user_groups_user_id_6a12ed8b_fk_auth_user_id",
+            "ParentTable": "auth_user_groups",
+            "ParentColumn": "user_id",
+            "ReferencedTable": "auth_user",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "django_admin_log_user_id_c564eba6_fk_auth_user_id",
+            "ParentTable": "django_admin_log",
+            "ParentColumn": "user_id",
+            "ReferencedTable": "auth_user",
+            "ReferencedColumn": "id"
+        },
+        {
+            "ForeignKey": "FK_RawMaterials_Units",
+            "ParentTable": "RawMaterials",
+            "ParentColumn": "UnitID",
+            "ReferencedTable": "Units",
+            "ReferencedColumn": "UnitID"
+        },
+        {
+            "ForeignKey": "FK_FinishedProducts_Units",
+            "ParentTable": "FinishedProducts",
+            "ParentColumn": "UnitID",
+            "ReferencedTable": "Units",
+            "ReferencedColumn": "UnitID"
+        },
+        {
+            "ForeignKey": "FK_Employees_Positions",
+            "ParentTable": "Employees",
+            "ParentColumn": "PositionID",
+            "ReferencedTable": "Positions",
+            "ReferencedColumn": "PositionID"
+        },
+        {
+            "ForeignKey": "FK_Ingredients_RawMaterials",
+            "ParentTable": "Ingredients",
+            "ParentColumn": "RawMaterialID",
+            "ReferencedTable": "RawMaterials",
+            "ReferencedColumn": "RawMaterialID"
+        },
+        {
+            "ForeignKey": "FK_Purchases_RawMaterials",
+            "ParentTable": "RawMaterialPurchases",
+            "ParentColumn": "RawMaterialID",
+            "ReferencedTable": "RawMaterials",
+            "ReferencedColumn": "RawMaterialID"
+        },
+        {
+            "ForeignKey": "FK_Ingredients_Products",
+            "ParentTable": "Ingredients",
+            "ParentColumn": "ProductID",
+            "ReferencedTable": "FinishedProducts",
+            "ReferencedColumn": "ProductID"
+        },
+        {
+            "ForeignKey": "FK_Production_Products",
+            "ParentTable": "Production",
+            "ParentColumn": "ProductID",
+            "ReferencedTable": "FinishedProducts",
+            "ReferencedColumn": "ProductID"
+        },
+        {
+            "ForeignKey": "FK_Sales_Products",
+            "ParentTable": "Sales",
+            "ParentColumn": "ProductID",
+            "ReferencedTable": "FinishedProducts",
+            "ReferencedColumn": "ProductID"
+        },
+        {
+            "ForeignKey": "FK_Purchases_Employees",
+            "ParentTable": "RawMaterialPurchases",
+            "ParentColumn": "EmployeeID",
+            "ReferencedTable": "Employees",
+            "ReferencedColumn": "EmployeeID"
+        },
+        {
+            "ForeignKey": "FK_Production_Employees",
+            "ParentTable": "Production",
+            "ParentColumn": "EmployeeID",
+            "ReferencedTable": "Employees",
+            "ReferencedColumn": "EmployeeID"
+        },
+        {
+            "ForeignKey": "FK_Sales_Employees",
+            "ParentTable": "Sales",
+            "ParentColumn": "EmployeeID",
+            "ReferencedTable": "Employees",
+            "ReferencedColumn": "EmployeeID"
+        },
+        {
+            "ForeignKey": "FK_SalaryPayments_Employees",
+            "ParentTable": "SalaryPayments",
+            "ParentColumn": "EmployeeID",
+            "ReferencedTable": "Employees",
+            "ReferencedColumn": "EmployeeID"
+        }
+    ],
+    "procedures": [
+        {
+            "name": "AddCredit",
+            "definition": "CREATE PROCEDURE AddCredit\r\n    @Amount DECIMAL(18,2),\r\n    @InterestRate DECIMAL(5,2)\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n\r\n    DECLARE @TotalToReturn DECIMAL(18,2);\r\n\r\n    -- Считаем сумму к возврату\r\n    SET @TotalToReturn =\r\n        ROUND(@Amount + (@Amount * @InterestRate / 100), 2);\r\n\r\n    BEGIN TRY\r\n        BEGIN TRANSACTION;\r\n\r\n        INSERT INTO Credits\r\n        (\r\n            Amount,\r\n            InterestRate,\r\n            RemainingAmount,\r\n            IsClosed,\r\n            CreditDate\r\n        )\r\n        VALUES\r\n        (\r\n            @Amount,\r\n            @InterestRate,\r\n            @TotalToReturn,\r\n            0,\r\n            GETDATE()\r\n        );\r\n\r\n        -- Бюджет увеличивается только на тело кредита\r\n        UPDATE Budget\r\n        SET TotalBudget = TotalBudget + @Amount;\r\n\r\n        COMMIT TRANSACTION;\r\n    END TRY\r\n    BEGIN CATCH\r\n        ROLLBACK TRANSACTION;\r\n        THROW;\r\n    END CATCH\r\nEND;"
+        },
+        {
+            "name": "PayCredit",
+            "definition": "CREATE PROCEDURE PayCredit\r\n    @CreditID INT,\r\n    @PaymentAmount DECIMAL(18,2)\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n\r\n    DECLARE @CurrentRemaining DECIMAL(18,2);\r\n\r\n    SELECT @CurrentRemaining = RemainingAmount\r\n    FROM Credits\r\n    WHERE CreditID = @CreditID\r\n    AND IsClosed = 0;\r\n\r\n    IF @CurrentRemaining IS NULL\r\n    BEGIN\r\n        RAISERROR('Кредит не найден или уже закрыт.',16,1);\r\n        RETURN;\r\n    END\r\n\r\n    IF @PaymentAmount <= 0\r\n    BEGIN\r\n        RAISERROR('Сумма платежа должна быть больше 0.',16,1);\r\n        RETURN;\r\n    END\r\n\r\n    IF @PaymentAmount > @CurrentRemaining\r\n        SET @PaymentAmount = @CurrentRemaining;\r\n\r\n    BEGIN TRY\r\n        BEGIN TRANSACTION;\r\n\r\n        -- Уменьшаем остаток\r\n        UPDATE Credits\r\n        SET RemainingAmount =\r\n            ROUND(RemainingAmount - @PaymentAmount, 2)\r\n        WHERE CreditID = @CreditID;\r\n\r\n        -- Если долг погашен\r\n        UPDATE Credits\r\n        SET IsClosed = 1,\r\n            RemainingAmount = 0\r\n        WHERE CreditID = @CreditID\r\n        AND RemainingAmount <= 0;\r\n\r\n        -- Бюджет уменьшается\r\n        UPDATE Budget\r\n        SET TotalBudget = TotalBudget - @PaymentAmount;\r\n\r\n        COMMIT TRANSACTION;\r\n    END TRY\r\n    BEGIN CATCH\r\n        ROLLBACK TRANSACTION;\r\n        THROW;\r\n    END CATCH\r\nEND;"
+        },
+        {
+            "name": "sp_upgraddiagrams",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_upgraddiagrams\r\n\tAS\r\n\tBEGIN\r\n\t\tIF OBJECT_ID(N'dbo.sysdiagrams') IS NOT NULL\r\n\t\t\treturn 0;\r\n\t\r\n\t\tCREATE TABLE dbo.sysdiagrams\r\n\t\t(\r\n\t\t\tname sysname NOT NULL,\r\n\t\t\tprincipal_id int NOT NULL,\t-- we may change it to varbinary(85)\r\n\t\t\tdiagram_id int PRIMARY KEY IDENTITY,\r\n\t\t\tversion int,\r\n\t\r\n\t\t\tdefinition varbinary(max)\r\n\t\t\tCONSTRAINT UK_principal_name UNIQUE\r\n\t\t\t(\r\n\t\t\t\tprincipal_id,\r\n\t\t\t\tname\r\n\t\t\t)\r\n\t\t);\r\n\r\n\r\n\t\t/* Add this if we need to have some form of extended properties for diagrams */\r\n\t\t/*\r\n\t\tIF OBJECT_ID(N'dbo.sysdiagram_properties') IS NULL\r\n\t\tBEGIN\r\n\t\t\tCREATE TABLE dbo.sysdiagram_properties\r\n\t\t\t(\r\n\t\t\t\tdiagram_id int,\r\n\t\t\t\tname sysname,\r\n\t\t\t\tvalue varbinary(max) NOT NULL\r\n\t\t\t)\r\n\t\tEND\r\n\t\t*/\r\n\r\n\t\tIF OBJECT_ID(N'dbo.dtproperties') IS NOT NULL\r\n\t\tbegin\r\n\t\t\tinsert into dbo.sysdiagrams\r\n\t\t\t(\r\n\t\t\t\t[name],\r\n\t\t\t\t[principal_id],\r\n\t\t\t\t[version],\r\n\t\t\t\t[definition]\r\n\t\t\t)\r\n\t\t\tselect\t \r\n\t\t\t\tconvert(sysname, dgnm.[uvalue]),\r\n\t\t\t\tDATABASE_PRINCIPAL_ID(N'dbo'),\t\t\t-- will change to the sid of sa\r\n\t\t\t\t0,\t\t\t\t\t\t\t-- zero for old format, dgdef.[version],\r\n\t\t\t\tdgdef.[lvalue]\r\n\t\t\tfrom dbo.[dtproperties] dgnm\r\n\t\t\t\tinner join dbo.[dtproperties] dggd on dggd.[property] = 'DtgSchemaGUID' and dggd.[objectid] = dgnm.[objectid]\t\r\n\t\t\t\tinner join dbo.[dtproperties] dgdef on dgdef.[property] = 'DtgSchemaDATA' and dgdef.[objectid] = dgnm.[objectid]\r\n\t\t\t\t\r\n\t\t\twhere dgnm.[property] = 'DtgSchemaNAME' and dggd.[uvalue] like N'_EA3E6268-D998-11CE-9454-00AA00A3F36E_' \r\n\t\t\treturn 2;\r\n\t\tend\r\n\t\treturn 1;\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_helpdiagrams",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_helpdiagrams\r\n\t(\r\n\t\t@diagramname sysname = NULL,\r\n\t\t@owner_id int = NULL\r\n\t)\r\n\tWITH EXECUTE AS N'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tDECLARE @user sysname\r\n\t\tDECLARE @dboLogin bit\r\n\t\tEXECUTE AS CALLER;\r\n\t\t\tSET @user = USER_NAME();\r\n\t\t\tSET @dboLogin = CONVERT(bit,IS_MEMBER('db_owner'));\r\n\t\tREVERT;\r\n\t\tSELECT\r\n\t\t\t[Database] = DB_NAME(),\r\n\t\t\t[Name] = name,\r\n\t\t\t[ID] = diagram_id,\r\n\t\t\t[Owner] = USER_NAME(principal_id),\r\n\t\t\t[OwnerID] = principal_id\r\n\t\tFROM\r\n\t\t\tsysdiagrams\r\n\t\tWHERE\r\n\t\t\t(@dboLogin = 1 OR USER_NAME(principal_id) = @user) AND\r\n\t\t\t(@diagramname IS NULL OR name = @diagramname) AND\r\n\t\t\t(@owner_id IS NULL OR principal_id = @owner_id)\r\n\t\tORDER BY\r\n\t\t\t4, 5, 1\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_helpdiagramdefinition",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_helpdiagramdefinition\r\n\t(\r\n\t\t@diagramname \tsysname,\r\n\t\t@owner_id\tint\t= null \t\t\r\n\t)\r\n\tWITH EXECUTE AS N'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tset nocount on\r\n\r\n\t\tdeclare @theId \t\tint\r\n\t\tdeclare @IsDbo \t\tint\r\n\t\tdeclare @DiagId\t\tint\r\n\t\tdeclare @UIDFound\tint\r\n\t\r\n\t\tif(@diagramname is null)\r\n\t\tbegin\r\n\t\t\tRAISERROR (N'E_INVALIDARG', 16, 1);\r\n\t\t\treturn -1\r\n\t\tend\r\n\t\r\n\t\texecute as caller;\r\n\t\tselect @theId = DATABASE_PRINCIPAL_ID();\r\n\t\tselect @IsDbo = IS_MEMBER(N'db_owner');\r\n\t\tif(@owner_id is null)\r\n\t\t\tselect @owner_id = @theId;\r\n\t\trevert; \r\n\t\r\n\t\tselect @DiagId = diagram_id, @UIDFound = principal_id from dbo.sysdiagrams where principal_id = @owner_id and name = @diagramname;\r\n\t\tif(@DiagId IS NULL or (@IsDbo = 0 and @UIDFound <> @theId ))\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Diagram does not exist or you do not have permission.', 16, 1);\r\n\t\t\treturn -3\r\n\t\tend\r\n\r\n\t\tselect version, definition FROM dbo.sysdiagrams where diagram_id = @DiagId ; \r\n\t\treturn 0\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_creatediagram",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_creatediagram\r\n\t(\r\n\t\t@diagramname \tsysname,\r\n\t\t@owner_id\t\tint\t= null, \t\r\n\t\t@version \t\tint,\r\n\t\t@definition \tvarbinary(max)\r\n\t)\r\n\tWITH EXECUTE AS 'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tset nocount on\r\n\t\r\n\t\tdeclare @theId int\r\n\t\tdeclare @retval int\r\n\t\tdeclare @IsDbo\tint\r\n\t\tdeclare @userName sysname\r\n\t\tif(@version is null or @diagramname is null)\r\n\t\tbegin\r\n\t\t\tRAISERROR (N'E_INVALIDARG', 16, 1);\r\n\t\t\treturn -1\r\n\t\tend\r\n\t\r\n\t\texecute as caller;\r\n\t\tselect @theId = DATABASE_PRINCIPAL_ID(); \r\n\t\tselect @IsDbo = IS_MEMBER(N'db_owner');\r\n\t\trevert; \r\n\t\t\r\n\t\tif @owner_id is null\r\n\t\tbegin\r\n\t\t\tselect @owner_id = @theId;\r\n\t\tend\r\n\t\telse\r\n\t\tbegin\r\n\t\t\tif @theId <> @owner_id\r\n\t\t\tbegin\r\n\t\t\t\tif @IsDbo = 0\r\n\t\t\t\tbegin\r\n\t\t\t\t\tRAISERROR (N'E_INVALIDARG', 16, 1);\r\n\t\t\t\t\treturn -1\r\n\t\t\t\tend\r\n\t\t\t\tselect @theId = @owner_id\r\n\t\t\tend\r\n\t\tend\r\n\t\t-- next 2 line only for test, will be removed after define name unique\r\n\t\tif EXISTS(select diagram_id from dbo.sysdiagrams where principal_id = @theId and name = @diagramname)\r\n\t\tbegin\r\n\t\t\tRAISERROR ('The name is already used.', 16, 1);\r\n\t\t\treturn -2\r\n\t\tend\r\n\t\r\n\t\tinsert into dbo.sysdiagrams(name, principal_id , version, definition)\r\n\t\t\t\tVALUES(@diagramname, @theId, @version, @definition) ;\r\n\t\t\r\n\t\tselect @retval = @@IDENTITY \r\n\t\treturn @retval\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_renamediagram",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_renamediagram\r\n\t(\r\n\t\t@diagramname \t\tsysname,\r\n\t\t@owner_id\t\tint\t= null,\r\n\t\t@new_diagramname\tsysname\r\n\t\r\n\t)\r\n\tWITH EXECUTE AS 'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tset nocount on\r\n\t\tdeclare @theId \t\t\tint\r\n\t\tdeclare @IsDbo \t\t\tint\r\n\t\t\r\n\t\tdeclare @UIDFound \t\tint\r\n\t\tdeclare @DiagId\t\t\tint\r\n\t\tdeclare @DiagIdTarg\t\tint\r\n\t\tdeclare @u_name\t\t\tsysname\r\n\t\tif((@diagramname is null) or (@new_diagramname is null))\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Invalid value', 16, 1);\r\n\t\t\treturn -1\r\n\t\tend\r\n\t\r\n\t\tEXECUTE AS CALLER;\r\n\t\tselect @theId = DATABASE_PRINCIPAL_ID();\r\n\t\tselect @IsDbo = IS_MEMBER(N'db_owner'); \r\n\t\tif(@owner_id is null)\r\n\t\t\tselect @owner_id = @theId;\r\n\t\tREVERT;\r\n\t\r\n\t\tselect @u_name = USER_NAME(@owner_id)\r\n\t\r\n\t\tselect @DiagId = diagram_id, @UIDFound = principal_id from dbo.sysdiagrams where principal_id = @owner_id and name = @diagramname \r\n\t\tif(@DiagId IS NULL or (@IsDbo = 0 and @UIDFound <> @theId))\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Diagram does not exist or you do not have permission.', 16, 1)\r\n\t\t\treturn -3\r\n\t\tend\r\n\t\r\n\t\t-- if((@u_name is not null) and (@new_diagramname = @diagramname))\t-- nothing will change\r\n\t\t--\treturn 0;\r\n\t\r\n\t\tif(@u_name is null)\r\n\t\t\tselect @DiagIdTarg = diagram_id from dbo.sysdiagrams where principal_id = @theId and name = @new_diagramname\r\n\t\telse\r\n\t\t\tselect @DiagIdTarg = diagram_id from dbo.sysdiagrams where principal_id = @owner_id and name = @new_diagramname\r\n\t\r\n\t\tif((@DiagIdTarg is not null) and  @DiagId <> @DiagIdTarg)\r\n\t\tbegin\r\n\t\t\tRAISERROR ('The name is already used.', 16, 1);\r\n\t\t\treturn -2\r\n\t\tend\t\t\r\n\t\r\n\t\tif(@u_name is null)\r\n\t\t\tupdate dbo.sysdiagrams set [name] = @new_diagramname, principal_id = @theId where diagram_id = @DiagId\r\n\t\telse\r\n\t\t\tupdate dbo.sysdiagrams set [name] = @new_diagramname where diagram_id = @DiagId\r\n\t\treturn 0\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_alterdiagram",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_alterdiagram\r\n\t(\r\n\t\t@diagramname \tsysname,\r\n\t\t@owner_id\tint\t= null,\r\n\t\t@version \tint,\r\n\t\t@definition \tvarbinary(max)\r\n\t)\r\n\tWITH EXECUTE AS 'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tset nocount on\r\n\t\r\n\t\tdeclare @theId \t\t\tint\r\n\t\tdeclare @retval \t\tint\r\n\t\tdeclare @IsDbo \t\t\tint\r\n\t\t\r\n\t\tdeclare @UIDFound \t\tint\r\n\t\tdeclare @DiagId\t\t\tint\r\n\t\tdeclare @ShouldChangeUID\tint\r\n\t\r\n\t\tif(@diagramname is null)\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Invalid ARG', 16, 1)\r\n\t\t\treturn -1\r\n\t\tend\r\n\t\r\n\t\texecute as caller;\r\n\t\tselect @theId = DATABASE_PRINCIPAL_ID();\t \r\n\t\tselect @IsDbo = IS_MEMBER(N'db_owner'); \r\n\t\tif(@owner_id is null)\r\n\t\t\tselect @owner_id = @theId;\r\n\t\trevert;\r\n\t\r\n\t\tselect @ShouldChangeUID = 0\r\n\t\tselect @DiagId = diagram_id, @UIDFound = principal_id from dbo.sysdiagrams where principal_id = @owner_id and name = @diagramname \r\n\t\t\r\n\t\tif(@DiagId IS NULL or (@IsDbo = 0 and @theId <> @UIDFound))\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Diagram does not exist or you do not have permission.', 16, 1);\r\n\t\t\treturn -3\r\n\t\tend\r\n\t\r\n\t\tif(@IsDbo <> 0)\r\n\t\tbegin\r\n\t\t\tif(@UIDFound is null or USER_NAME(@UIDFound) is null) -- invalid principal_id\r\n\t\t\tbegin\r\n\t\t\t\tselect @ShouldChangeUID = 1 ;\r\n\t\t\tend\r\n\t\tend\r\n\r\n\t\t-- update dds data\t\t\t\r\n\t\tupdate dbo.sysdiagrams set definition = @definition where diagram_id = @DiagId ;\r\n\r\n\t\t-- change owner\r\n\t\tif(@ShouldChangeUID = 1)\r\n\t\t\tupdate dbo.sysdiagrams set principal_id = @theId where diagram_id = @DiagId ;\r\n\r\n\t\t-- update dds version\r\n\t\tif(@version is not null)\r\n\t\t\tupdate dbo.sysdiagrams set version = @version where diagram_id = @DiagId ;\r\n\r\n\t\treturn 0\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "sp_dropdiagram",
+            "definition": "\r\n\tCREATE PROCEDURE dbo.sp_dropdiagram\r\n\t(\r\n\t\t@diagramname \tsysname,\r\n\t\t@owner_id\tint\t= null\r\n\t)\r\n\tWITH EXECUTE AS 'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tset nocount on\r\n\t\tdeclare @theId \t\t\tint\r\n\t\tdeclare @IsDbo \t\t\tint\r\n\t\t\r\n\t\tdeclare @UIDFound \t\tint\r\n\t\tdeclare @DiagId\t\t\tint\r\n\t\r\n\t\tif(@diagramname is null)\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Invalid value', 16, 1);\r\n\t\t\treturn -1\r\n\t\tend\r\n\t\r\n\t\tEXECUTE AS CALLER;\r\n\t\tselect @theId = DATABASE_PRINCIPAL_ID();\r\n\t\tselect @IsDbo = IS_MEMBER(N'db_owner'); \r\n\t\tif(@owner_id is null)\r\n\t\t\tselect @owner_id = @theId;\r\n\t\tREVERT; \r\n\t\t\r\n\t\tselect @DiagId = diagram_id, @UIDFound = principal_id from dbo.sysdiagrams where principal_id = @owner_id and name = @diagramname \r\n\t\tif(@DiagId IS NULL or (@IsDbo = 0 and @UIDFound <> @theId))\r\n\t\tbegin\r\n\t\t\tRAISERROR ('Diagram does not exist or you do not have permission.', 16, 1)\r\n\t\t\treturn -3\r\n\t\tend\r\n\t\r\n\t\tdelete from dbo.sysdiagrams where diagram_id = @DiagId;\r\n\t\r\n\t\treturn 0;\r\n\tEND\r\n\t"
+        },
+        {
+            "name": "CheckBudget",
+            "definition": "CREATE PROCEDURE CheckBudget\r\n    @PurchaseAmount FLOAT,\r\n    @Result INT OUTPUT\r\nAS\r\nBEGIN\r\n    DECLARE @CurrentBudget FLOAT;\r\n\r\n    SELECT @CurrentBudget = TotalBudget\r\n    FROM Budget\r\n    WHERE BudgetID = 1;\r\n\r\n    IF @CurrentBudget >= @PurchaseAmount\r\n        SET @Result = 0;  -- денег хватает\r\n    ELSE\r\n        SET @Result = 1;  -- денег недостаточно\r\nEND;\r\n\r\n"
+        },
+        {
+            "name": "AddSale",
+            "definition": "\r\nCREATE PROCEDURE [dbo].[AddSale]\r\n    @ProductID INT,\r\n    @Quantity INT,\r\n    @TotalAmount DECIMAL(18,2),\r\n    @EmployeeID INT\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n\r\n    BEGIN TRY\r\n        BEGIN TRANSACTION;\r\n\r\n        DECLARE @CurrentStock FLOAT;\r\n        DECLARE @CurrentTotal FLOAT;\r\n        DECLARE @CostPerUnit FLOAT;\r\n        DECLARE @TotalCost FLOAT;\r\n\r\n        ----------------------------------------------------\r\n        -- Получаем текущий остаток и себестоимость\r\n        ----------------------------------------------------\r\n        SELECT \r\n            @CurrentStock = Quantity,\r\n            @CurrentTotal = TotalAmount\r\n        FROM FinishedProducts\r\n        WHERE ProductID = @ProductID;\r\n\r\n        ----------------------------------------------------\r\n        -- Проверка остатка\r\n        ----------------------------------------------------\r\n        IF @CurrentStock < @Quantity\r\n        BEGIN\r\n            RAISERROR('Недостаточно готовой продукции.', 16, 1);\r\n            ROLLBACK TRANSACTION;\r\n            RETURN;\r\n        END\r\n\r\n        ----------------------------------------------------\r\n        -- Расчёт себестоимости\r\n        ----------------------------------------------------\r\n        SET @CostPerUnit = @CurrentTotal / NULLIF(@CurrentStock,0);\r\n        SET @TotalCost = @CostPerUnit * @Quantity;\r\n\r\n        ----------------------------------------------------\r\n        -- Уменьшаем склад (количество + себестоимость)\r\n        ----------------------------------------------------\r\n        UPDATE FinishedProducts\r\n        SET \r\n            Quantity = Quantity - @Quantity,\r\n            TotalAmount =\r\n                CASE \r\n                    WHEN Quantity - @Quantity <= 0 THEN 0\r\n                    ELSE ROUND(TotalAmount - @TotalCost, 2)\r\n                END\r\n        WHERE ProductID = @ProductID;\r\n\r\n        ----------------------------------------------------\r\n        -- Добавляем запись продажи\r\n        ----------------------------------------------------\r\n        INSERT INTO Sales \r\n            (ProductID, Quantity, TotalAmount, SaleDate, EmployeeID)\r\n        VALUES \r\n            (@ProductID, @Quantity, @TotalAmount, GETDATE(), @EmployeeID);\r\n\r\n        ----------------------------------------------------\r\n        -- Увеличиваем бюджет\r\n        ----------------------------------------------------\r\n        UPDATE Budget\r\n        SET TotalBudget = TotalBudget + @TotalAmount;\r\n\r\n        COMMIT TRANSACTION;\r\n\r\n    END TRY\r\n    BEGIN CATCH\r\n        ROLLBACK TRANSACTION;\r\n        THROW;\r\n    END CATCH\r\nEND;\r\n"
+        },
+        {
+            "name": "AddProduction",
+            "definition": "\r\nCREATE PROCEDURE [dbo].[AddProduction]\r\n    @ProductID INT,\r\n    @Quantity INT,\r\n    @EmployeeID INT\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n\r\n    BEGIN TRY\r\n        BEGIN TRANSACTION;\r\n\r\n        -- Проверка рецептуры\r\n        IF NOT EXISTS (SELECT 1 FROM Ingredients WHERE ProductID = @ProductID)\r\n        BEGIN\r\n            RAISERROR('Для продукции не задана рецептура.', 16, 1);\r\n            ROLLBACK TRANSACTION;\r\n            RETURN;\r\n        END\r\n\r\n        -- Проверка достаточности сырья\r\n        IF EXISTS (\r\n            SELECT 1\r\n            FROM Ingredients i\r\n            JOIN RawMaterials r ON i.RawMaterialID = r.RawMaterialID\r\n            WHERE i.ProductID = @ProductID\r\n            AND r.Quantity < (i.Quantity * @Quantity)\r\n        )\r\n        BEGIN\r\n            RAISERROR('Недостаточно сырья для производства.', 16, 1);\r\n            ROLLBACK TRANSACTION;\r\n            RETURN;\r\n        END\r\n\r\n        ------------------------------------------------------------\r\n        -- Расчёт общей себестоимости производимой партии\r\n        ------------------------------------------------------------\r\n        DECLARE @TotalProductionCost FLOAT = 0;\r\n\r\n        SELECT @TotalProductionCost = \r\n            SUM(\r\n                ROUND(\r\n                    (r.TotalAmount / NULLIF(r.Quantity, 0)) \r\n                    * (i.Quantity * @Quantity),\r\n                2)\r\n            )\r\n        FROM Ingredients i\r\n        JOIN RawMaterials r ON i.RawMaterialID = r.RawMaterialID\r\n        WHERE i.ProductID = @ProductID;\r\n\r\n        ------------------------------------------------------------\r\n        -- Списание сырья (количество + стоимость)\r\n        ------------------------------------------------------------\r\n        UPDATE r\r\n        SET \r\n            r.TotalAmount =\r\n                CASE \r\n                    WHEN r.Quantity - (i.Quantity * @Quantity) <= 0 THEN 0\r\n                    ELSE ROUND(\r\n                        r.TotalAmount - \r\n                        (\r\n                            ROUND(r.TotalAmount / NULLIF(r.Quantity,0), 4) \r\n                            * (i.Quantity * @Quantity)\r\n                        ),\r\n                    2)\r\n                END,\r\n            r.Quantity = r.Quantity - (i.Quantity * @Quantity)\r\n        FROM RawMaterials r\r\n        JOIN Ingredients i ON r.RawMaterialID = i.RawMaterialID\r\n        WHERE i.ProductID = @ProductID;\r\n\r\n        ------------------------------------------------------------\r\n        -- Увеличение готовой продукции (количество + стоимость)\r\n        ------------------------------------------------------------\r\n        UPDATE FinishedProducts\r\n        SET \r\n            Quantity = Quantity + @Quantity,\r\n            TotalAmount = TotalAmount + ISNULL(@TotalProductionCost, 0)\r\n        WHERE ProductID = @ProductID;\r\n\r\n        ------------------------------------------------------------\r\n        -- Запись в журнал производства\r\n        ------------------------------------------------------------\r\n        INSERT INTO Production (ProductID, Quantity, ProductionDate, EmployeeID)\r\n        VALUES (@ProductID, @Quantity, GETDATE(), @EmployeeID);\r\n\r\n        COMMIT TRANSACTION;\r\n\r\n    END TRY\r\n    BEGIN CATCH\r\n        ROLLBACK TRANSACTION;\r\n        THROW;\r\n    END CATCH\r\nEND;\r\n"
+        },
+        {
+            "name": "AddRawMaterialPurchase",
+            "definition": "CREATE PROCEDURE AddRawMaterialPurchase\r\n    @RawMaterialID INT,\r\n    @Quantity FLOAT,\r\n    @TotalAmount FLOAT,\r\n    @EmployeeID INT,\r\n    @Result INT OUTPUT\r\nAS\r\nBEGIN\r\n    DECLARE @CheckResult INT;\r\n\r\n    EXEC CheckBudget @TotalAmount, @CheckResult OUTPUT;\r\n\r\n    IF @CheckResult = 0\r\n    BEGIN\r\n        INSERT INTO RawMaterialPurchases\r\n        (RawMaterialID, Quantity, TotalAmount, EmployeeID)\r\n        VALUES\r\n        (@RawMaterialID, @Quantity, @TotalAmount, @EmployeeID);\r\n\r\n        SET @Result = 0;\r\n    END\r\n    ELSE\r\n    BEGIN\r\n        SET @Result = 1;\r\n    END\r\nEND;"
+        },
+        {
+            "name": "AddSalaryPayment",
+            "definition": "CREATE PROCEDURE AddSalaryPayment\r\n    @EmployeeID INT\r\nAS\r\nBEGIN\r\n    SET NOCOUNT ON;\r\n\r\n    BEGIN TRY\r\n        BEGIN TRANSACTION;\r\n\r\n        DECLARE @Salary DECIMAL(18,2);\r\n        DECLARE @CurrentBudget DECIMAL(18,2);\r\n\r\n        -- Получаем зарплату сотрудника\r\n        SELECT @Salary = Salary\r\n        FROM Employees\r\n        WHERE EmployeeID = @EmployeeID;\r\n\r\n        IF @Salary IS NULL\r\n        BEGIN\r\n            RAISERROR('Сотрудник не найден.', 16, 1);\r\n            ROLLBACK TRANSACTION;\r\n            RETURN;\r\n        END\r\n\r\n        -- Получаем текущий бюджет\r\n        SELECT @CurrentBudget = TotalBudget\r\n        FROM Budget;\r\n\r\n        -- Проверяем достаточность средств\r\n        IF @CurrentBudget < @Salary\r\n        BEGIN\r\n            RAISERROR('Недостаточно средств для выплаты зарплаты.', 16, 1);\r\n            ROLLBACK TRANSACTION;\r\n            RETURN;\r\n        END\r\n\r\n        -- Списываем бюджет\r\n        UPDATE Budget\r\n        SET TotalBudget = TotalBudget - @Salary;\r\n\r\n        -- Записываем выплату\r\n        INSERT INTO SalaryPayments (EmployeeID, Amount)\r\n        VALUES (@EmployeeID, @Salary);\r\n\r\n        COMMIT TRANSACTION;\r\n\r\n    END TRY\r\n    BEGIN CATCH\r\n        ROLLBACK TRANSACTION;\r\n        THROW;\r\n    END CATCH\r\nEND;"
+        }
+    ],
+    "triggers": [
+        {
+            "name": "trg_AfterInsert_Purchase",
+            "definition": "CREATE TRIGGER trg_AfterInsert_Purchase\r\nON RawMaterialPurchases\r\nAFTER INSERT\r\nAS\r\nBEGIN\r\n    -- Уменьшаем бюджет\r\n    UPDATE b\r\n    SET b.TotalBudget = b.TotalBudget - i.TotalAmount\r\n    FROM Budget b\r\n    INNER JOIN inserted i ON 1 = 1\r\n    WHERE b.BudgetID = 1;\r\n\r\n    -- Увеличиваем количество сырья\r\n    UPDATE r\r\n    SET \r\n        r.Quantity = r.Quantity + i.Quantity,\r\n        r.TotalAmount = r.TotalAmount + i.TotalAmount\r\n    FROM RawMaterials r\r\n    INNER JOIN inserted i \r\n        ON r.RawMaterialID = i.RawMaterialID;\r\nEND;\r\n",
+            "ParentTable": "RawMaterialPurchases"
+        }
+    ],
+    "functions": [
+        {
+            "name": "fn_diagramobjects",
+            "definition": "\r\n\tCREATE FUNCTION dbo.fn_diagramobjects() \r\n\tRETURNS int\r\n\tWITH EXECUTE AS N'dbo'\r\n\tAS\r\n\tBEGIN\r\n\t\tdeclare @id_upgraddiagrams\t\tint\r\n\t\tdeclare @id_sysdiagrams\t\t\tint\r\n\t\tdeclare @id_helpdiagrams\t\tint\r\n\t\tdeclare @id_helpdiagramdefinition\tint\r\n\t\tdeclare @id_creatediagram\tint\r\n\t\tdeclare @id_renamediagram\tint\r\n\t\tdeclare @id_alterdiagram \tint \r\n\t\tdeclare @id_dropdiagram\t\tint\r\n\t\tdeclare @InstalledObjects\tint\r\n\r\n\t\tselect @InstalledObjects = 0\r\n\r\n\t\tselect \t@id_upgraddiagrams = object_id(N'dbo.sp_upgraddiagrams'),\r\n\t\t\t@id_sysdiagrams = object_id(N'dbo.sysdiagrams'),\r\n\t\t\t@id_helpdiagrams = object_id(N'dbo.sp_helpdiagrams'),\r\n\t\t\t@id_helpdiagramdefinition = object_id(N'dbo.sp_helpdiagramdefinition'),\r\n\t\t\t@id_creatediagram = object_id(N'dbo.sp_creatediagram'),\r\n\t\t\t@id_renamediagram = object_id(N'dbo.sp_renamediagram'),\r\n\t\t\t@id_alterdiagram = object_id(N'dbo.sp_alterdiagram'), \r\n\t\t\t@id_dropdiagram = object_id(N'dbo.sp_dropdiagram')\r\n\r\n\t\tif @id_upgraddiagrams is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 1\r\n\t\tif @id_sysdiagrams is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 2\r\n\t\tif @id_helpdiagrams is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 4\r\n\t\tif @id_helpdiagramdefinition is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 8\r\n\t\tif @id_creatediagram is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 16\r\n\t\tif @id_renamediagram is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 32\r\n\t\tif @id_alterdiagram  is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 64\r\n\t\tif @id_dropdiagram is not null\r\n\t\t\tselect @InstalledObjects = @InstalledObjects + 128\r\n\t\t\r\n\t\treturn @InstalledObjects \r\n\tEND\r\n\t",
+            "type_desc": "SQL_SCALAR_FUNCTION"
+        }
+    ]
+}

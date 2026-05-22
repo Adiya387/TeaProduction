@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Журнал производства</h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск по продукции..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openModal('productionModal')">
+                <i class="fas fa-plus"></i> Новое производство
+            </button>
+        </div>
+    </div>
+
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <thead style="background: #f8fafc; position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Продукция</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Количество</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Дата</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сотрудник</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Связанная заявка</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for i in items %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 16px 24px; font-weight:600;">{{ i.product.name|default:"Удалено" }}</td>
+                        <td style="padding: 16px 24px; font-weight:700; color:var(--primary);">{{ i.quantity|floatformat:2 }} ед.</td>
+                        <td style="padding: 16px 24px; color: var(--text-muted);">{{ i.date|date:"d.m.Y H:i" }}</td>
+                        <td style="padding: 16px 24px;">{{ i.employee|default:"—" }}</td>
+                        <td style="padding: 16px 24px;">
+                            {% if i.related_request %}
+                                <a href="/production-requests/" style="color:var(--primary); font-weight:700; text-decoration:none;">Заявка #{{ i.related_request.id }}</a>
+                            {% else %}
+                                <span style="color:var(--text-muted);">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="padding: 40px; text-align: center; color: var(--text-muted);">
+                            Записей о производстве пока нет
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<script>
+function filterTable() {
+    let input = document.getElementById("tableSearch");
+    let filter = input.value.toLowerCase();
+    let table = document.getElementById("dataTable");
+    let tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            let txtValue = td.textContent || td.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

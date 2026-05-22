@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 700; color: #1e293b;">Управление сырьем</h1>
+        <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Добавить сырье
+        </button>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 16px 24px;">ID</th>
+                    <th style="padding: 16px 24px;">Название</th>
+                    <th style="padding: 16px 24px;">Ед. изм.</th>
+                    <th style="padding: 16px 24px;">Текущий остаток</th>
+                    <th style="padding: 16px 24px;">Балансовая сумма</th>
+                    <th style="padding: 16px 24px; text-align: right;">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr style="border-bottom: 1px solid var(--border-light);">
+                    <td style="padding: 16px 24px; color: var(--text-muted);">#{{ item.id }}</td>
+                    <td style="padding: 16px 24px; font-weight: 600;">{{ item.name }}</td>
+                    <td style="padding: 16px 24px;">{{ item.unit.name }}</td>
+                    <td style="padding: 16px 24px;" class="format-num">{{ item.quantity }}</td>
+                    <td style="padding: 16px 24px; font-weight: 600;" class="format-money">{{ item.total_amount }}</td>
+                    <td style="padding: 16px 24px; text-align: right;">
+                        <button class="btn-close" style="background:#f1f5f9; color:var(--primary); margin-right:8px;" 
+                                onclick="openEditModal('{{ item.id }}', '{{ item.name|escapejs }}', '{{ item.unit.id }}', '{{ item.quantity }}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <a href="?action=delete&id={{ item.id }}" class="btn-close" style="background:#fee2e2; color:var(--danger);" 
+                           onclick="return confirm('Вы уверены, что хотите удалить это сырье?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Modal for Add/Edit -->
+<div class="modal-overlay" id="crudModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Добавить сырье</h2>
+            <button class="btn-close" onclick="closeModal('crudModal')">&times;</button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="item_id">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название сырья</label>
+                    <input type="text" name="name" id="item_name" class="form-control" required placeholder="Например: Лист иван-чая">
+                </div>
+                <div class="form-group">
+                    <label>Единица измерения</label>
+                    <select name="unit_id" id="item_unit" class="form-control" required>
+                        {% for unit in units %}
+                        <option value="{{ unit.id }}">{{ unit.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Начальное количество</label>
+                    <input type="number" name="quantity" id="item_qty" class="form-control" step="0.01" value="0">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('crudModal')">Отмена</button>
+                <button type="submit" class="btn-primary" id="btnSubmit">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = "Добавить сырье";
+        document.getElementById('item_id').value = "";
+        document.getElementById('item_name').value = "";
+        document.getElementById('item_qty').value = "0";
+        openModal('crudModal');
+    }
+
+    function openEditModal(id, name, unitId, qty) {
+        document.getElementById('modalTitle').textContent = "Изменить сырье";
+        document.getElementById('item_id').value = id;
+        document.getElementById('item_name').value = name;
+        document.getElementById('item_unit').value = unitId;
+        document.getElementById('item_qty').value = qty;
+        openModal('crudModal');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Apply formatting to static table cells
+        document.querySelectorAll('.format-num').forEach(el => {
+            el.textContent = formatBusinessVal(el.textContent);
+        });
+        document.querySelectorAll('.format-money').forEach(el => {
+            el.textContent = formatBusinessVal(el.textContent, true);
+        });
+    });
+</script>
+{% endblock %}

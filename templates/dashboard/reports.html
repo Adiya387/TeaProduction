@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 700; color: #1e293b;">Аналитика и Отчеты</h1>
+        <div style="display: flex; gap: 12px; align-items: center; background: #fff; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-light);">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 13px; color: var(--text-muted);">От:</span>
+                <input type="date" id="dateStart" class="form-control" style="width: auto; padding: 4px 8px; font-size: 13px;">
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 13px; color: var(--text-muted);">До:</span>
+                <input type="date" id="dateEnd" class="form-control" style="width: auto; padding: 4px 8px; font-size: 13px;">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 6px 16px; font-size: 13px;" onclick="loadReport()">
+                Применить
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Type Selector -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;">
+        <button class="report-btn" data-type="profit" onclick="switchReport('profit', this)">Прибыль</button>
+        <button class="report-btn active" data-type="sales" onclick="switchReport('sales', this)">Продажи</button>
+        <button class="report-btn" data-type="purchases" onclick="switchReport('purchases', this)">Закупки</button>
+        <button class="report-btn" data-type="raw_materials" onclick="switchReport('raw_materials', this)">Остатки сырья</button>
+        <button class="report-btn" data-type="products" onclick="switchReport('products', this)">Остатки продукции</button>
+        <button class="report-btn" data-type="salaries" onclick="switchReport('salaries', this)">Зарплаты</button>
+        <button class="report-btn" data-type="credits" onclick="switchReport('credits', this)">Кредиты</button>
+    </div>
+
+    <style>
+        .report-btn {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .report-btn:hover { 
+            background: var(--primary-light); 
+            border-color: var(--primary); 
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .report-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 10px 15px -3px rgba(6, 95, 70, 0.2);
+        }
+        #tableHead th {
+            background-color: #f9fafb;
+            color: var(--text-muted);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            padding: 20px 24px;
+        }
+        .chart-card {
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow);
+            background: #fff;
+            padding: 32px;
+        }
+    </style>
+
+    <!-- Content Grid -->
+    <div class="charts-grid" style="margin-bottom: 32px;">
+        <div class="chart-card">
+            <h3 class="chart-title" id="reportChartTitle">Визуализация</h3>
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="reportChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px;">
+             <div style="text-align: center;">
+                 <h4 style="color: var(--text-muted); margin-bottom: 8px; font-size: 14px;">Ключевой показатель</h4>
+                 <div id="reportSummaryValue" style="font-size: 32px; font-weight: 800; color: #1e293b;">0 сом</div>
+                 <div id="reportSummaryLabel" style="font-size: 12px; color: var(--text-muted);">Общая сумма</div>
+             </div>
+             <div id="additionalSummary" style="width: 100%; padding: 0 40px; border-top: 1px solid var(--border-light); padding-top: 20px; display: none;">
+                <!-- Extra stats here -->
+             </div>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <div style="padding: 24px 32px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center; background: #fcfdfe;">
+            <span id="reportTableTitle" style="font-weight: 700; color: var(--primary); font-size: 16px;">Детализация отчета</span>
+            <input type="text" id="tableSearch" class="form-control" style="width: 280px; padding: 10px 16px;" placeholder="Поиск в таблице..." onkeyup="filterTable()">
+        </div>
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;" id="reportTable">
+                <thead style="background: #f8fafc; position: sticky; top: 0;" id="tableHead"></thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Set default dates
+    const today = new Date();
+    document.getElementById('dateStart').value = "2026-01-01";
+    document.getElementById('dateEnd').value = today.toISOString().split('T')[0];
+
+    let currentReportType = 'sales';
+    let chartInstance = null;
+
+    // Handle URL type parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const typeParam = urlParams.get('type');
+    const modeParam = urlParams.get('mode');
+
+    const reportNames = {
+        'profit': 'Финансовый результат (Прибыль/Убытки)',
+        'sales': 'Отчет по реализации продукции',
+        'purchases': 'Ведомость закупок сырья',
+        'raw_materials': 'Инвентаризационная ведомость сырья',
+        'products': 'Ведомость остатков готовой продукции',
+        'salaries': 'Отчет по выплатам заработной платы',
+        'credits': 'Состояние кредитных обязательств',
+        'erp_requests': 'Отчёт по заявкам (Автоматика)',
+        'erp_production': 'Отчёт по производству ERP',
+        'erp_profit': 'Отчёт по прибыли ERP (Автоматика)'
+    };
+
+    function updateReportTitles() {
+        const name = reportNames[currentReportType] || 'Отчет';
+        const h1 = document.querySelector('h1');
+        const sub = document.getElementById('reportTableTitle');
+        
+        if (modeParam === 'table') {
+            h1.textContent = name;
+        } else {
+            h1.textContent = 'Аналитика и Отчеты';
+        }
+        
+        if (sub) {
+            sub.textContent = name;
+        }
+        
+        // Update Chart title too
+        const chartTitle = document.getElementById('reportChartTitle');
+        if (chartTitle) chartTitle.textContent = 'Визуализация: ' + name;
+    }
+
+    if (modeParam === 'table') {
+        const grid = document.querySelector('.charts-grid');
+        if (grid) grid.style.display = 'none';
+        const selector = document.querySelector('div[style*="flex-wrap: wrap"]');
+        if (selector) selector.style.display = 'none';
+    }
+
+    if (typeParam) {
+        currentReportType = typeParam;
+        document.querySelectorAll('.report-btn').forEach(b => {
+            if (b.dataset.type === typeParam) b.classList.add('active');
+            else b.classList.remove('active');
+        });
+    }
+
+    updateReportTitles();
+
+    function switchReport(type, btn) {
+        document.querySelectorAll('.report-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentReportType = type;
+        updateReportTitles();
+        loadReport();
+    }
+
+    async function loadReport() {
+        const start = document.getElementById('dateStart').value;
+        const end = document.getElementById('dateEnd').value;
+        const url = `/api/reports_data/?type=${currentReportType}&start=${start}&end=${end}`;
+
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            renderChart(data);
+            renderTable(data);
+            updateSummary(data);
+        } catch(e) { console.error("Report fetch failed", e); }
+    }
+
+    function updateSummary(data) {
+        const valEl = document.getElementById('reportSummaryValue');
+        const labelEl = document.getElementById('reportSummaryLabel');
+        const extraEl = document.getElementById('additionalSummary');
+        extraEl.style.display = 'none';
+
+        if (currentReportType === 'profit') {
+            valEl.textContent = formatBusinessVal(data.summary.profit, true);
+            labelEl.textContent = "Чистая прибыль за период";
+            extraEl.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Выручка:</span> <span style="font-weight:700; color:var(--success)">${formatBusinessVal(data.summary.revenue, true)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Расходы:</span> <span style="font-weight:700; color:var(--danger)">${formatBusinessVal(data.summary.expenses, true)}</span>
+                </div>
+            `;
+            extraEl.style.display = 'block';
+        } else if (currentReportType === 'sales') {
+            valEl.textContent = formatBusinessVal(data.summary.total_revenue, true);
+            labelEl.textContent = "Общая выручка";
+        } else if (currentReportType === 'purchases') {
+            valEl.textContent = formatBusinessVal(data.summary.total_spent, true);
+            labelEl.textContent = "Всего потрачено на закупки";
+        } else if (currentReportType === 'raw_materials') {
+            valEl.textContent = formatBusinessVal(data.summary.total_value, true);
+            labelEl.textContent = "Балансовая стоимость склада";
+        } else if (currentReportType === 'products') {
+            valEl.textContent = formatBusinessVal(data.summary.total_qty);
+            labelEl.textContent = "Единиц продукции на складе";
+        } else if (currentReportType === 'salaries') {
+            valEl.textContent = formatBusinessVal(data.summary.total_paid, true);
+            labelEl.textContent = "Всего выплат за период";
+        } else if (currentReportType === 'credits') {
+            valEl.textContent = formatBusinessVal(data.summary.total_debt, true);
+            labelEl.textContent = "Общий остаток долга";
+        } else if (currentReportType === 'erp_requests') {
+            valEl.textContent = data.summary.total;
+            labelEl.textContent = "Всего создано заявок";
+            extraEl.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Выполнено:</span> <span style="font-weight:700; color:var(--success)">${data.summary.completed}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>В обработке:</span> <span style="font-weight:700; color:var(--primary)">${data.summary.processing}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Ошибки:</span> <span style="font-weight:700; color:var(--danger)">${data.summary.errors}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #eee; padding-top:8px;">
+                    <span>Прибыль ERP:</span> <span style="font-weight:800; color:var(--success)">${formatBusinessVal(data.summary.total_profit, true)}</span>
+                </div>
+            `;
+            extraEl.style.display = 'block';
+        } else if (currentReportType === 'erp_production') {
+            valEl.textContent = formatBusinessVal(data.summary.total_produced);
+            labelEl.textContent = "Всего произведено (ед.)";
+            extraEl.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Автоматика:</span> <span style="font-weight:700; color:var(--primary)">${data.summary.auto}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Вручную:</span> <span style="font-weight:700; color:var(--secondary)">${data.summary.manual}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid #eee; padding-top:8px;">
+                    <span>Топ продукт:</span> <span style="font-weight:800;">${data.summary.top_product}</span>
+                </div>
+            `;
+            extraEl.style.display = 'block';
+        } else if (currentReportType === 'erp_profit') {
+            valEl.textContent = formatBusinessVal(data.summary.net_profit, true);
+            labelEl.textContent = "Чистая прибыль ERP";
+            extraEl.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                    <span>Доход (Продажи):</span> <span style="font-weight:700; color:var(--success)">${formatBusinessVal(data.summary.revenue, true)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Расход (Закупки):</span> <span style="font-weight:700; color:var(--danger)">${formatBusinessVal(data.summary.expenses, true)}</span>
+                </div>
+            `;
+            extraEl.style.display = 'block';
+        }
+    }
+
+    function renderChart(data) {
+        const ctx = document.getElementById('reportChart').getContext('2d');
+        if (chartInstance) chartInstance.destroy();
+
+        let chartType = 'bar';
+        let bgColors = '#10b981';
+        let borderColors = '#059669';
+
+        if (currentReportType === 'raw_materials') {
+            chartType = 'pie';
+            bgColors = ['#F43F5E', '#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#64748B'];
+        } else if (currentReportType === 'products') {
+            chartType = 'doughnut';
+            bgColors = ['#F59E0B', '#10B981', '#3B82F6', '#EC4899', '#8B5CF6'];
+        } else if (currentReportType === 'sales') {
+            chartType = 'line';
+            bgColors = 'rgba(59, 130, 246, 0.2)';
+            borderColors = '#3B82F6';
+        } else if (currentReportType === 'purchases') {
+            chartType = 'line';
+            bgColors = 'rgba(16, 185, 129, 0.2)';
+            borderColors = '#10B981';
+        } else if (currentReportType === 'profit') {
+            chartType = 'bar';
+            bgColors = data.chart.values.map(v => v >= 0 ? '#10B981' : '#EF4444');
+        } else if (currentReportType === 'credits') {
+            chartType = 'pie';
+            bgColors = ['#10B981', '#EF4444'];
+        } else if (currentReportType === 'salaries') {
+            chartType = 'bar';
+            bgColors = ['#6366F1', '#8B5CF6', '#EC4899', '#F43F5E', '#F59E0B'];
+        } else if (currentReportType === 'erp_requests') {
+            chartType = 'pie';
+            bgColors = ['#10B981', '#3B82F6', '#EF4444', '#F59E0B', '#64748B'];
+        } else if (currentReportType === 'erp_production') {
+            chartType = 'doughnut';
+            bgColors = ['#059669', '#6366F1'];
+        } else if (currentReportType === 'erp_profit') {
+            chartType = 'line';
+            bgColors = 'rgba(16, 185, 129, 0.1)';
+            borderColors = '#10B981';
+        }
+
+        chartInstance = new Chart(ctx, {
+            type: chartType,
+            data: {
+                labels: data.chart.labels,
+                datasets: [{
+                    label: 'Значение',
+                    data: data.chart.values,
+                    backgroundColor: bgColors,
+                    borderColor: borderColors,
+                    borderWidth: 3,
+                    pointBackgroundColor: borderColors,
+                    pointRadius: 5,
+                    pointHoverRadius: 8,
+                    tension: 0.4,
+                    fill: chartType === 'line'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: (chartType === 'pie' || chartType === 'doughnut' || currentReportType === 'profit') },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) label += ': ';
+                                label += formatBusinessVal(context.raw, true);
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: chartType === 'bar' || chartType === 'line' ? {
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { callback: function(v) { return formatBusinessVal(v); } } 
+                    }
+                } : {}
+            }
+        });
+    }
+
+    function renderTable(data) {
+        const head = document.getElementById('tableHead');
+        const body = document.getElementById('tableBody');
+        body.innerHTML = '';
+        
+        let cols = [];
+        if (currentReportType === 'raw_materials') {
+            cols = ['Название', 'Остаток', 'Ед. изм.', 'Сумма'];
+            data.table.forEach(r => {
+                body.innerHTML += `<tr><td style="padding:16px 24px;">${r.name}</td><td>${formatBusinessVal(r.qty)}</td><td>${r.unit}</td><td>${formatBusinessVal(r.total, true)}</td></tr>`;
+            });
+        } else if (currentReportType === 'products') {
+            cols = ['Название', 'Остаток', 'Ед. изм.', 'Сумма'];
+            data.table.forEach(r => {
+                body.innerHTML += `<tr><td style="padding:16px 24px;">${r.name}</td><td>${formatBusinessVal(r.qty)}</td><td>${r.unit}</td><td>${formatBusinessVal(r.total, true)}</td></tr>`;
+            });
+        } else if (currentReportType === 'purchases' || currentReportType === 'sales') {
+            cols = ['Дата', 'Объект', 'Кол-во', 'Сумма', 'Сотрудник'];
+            data.table.forEach(r => {
+                body.innerHTML += `<tr><td style="padding:16px 24px;">${r.date}</td><td>${r.item}</td><td>${formatBusinessVal(r.qty)}</td><td>${formatBusinessVal(r.total, true)}</td><td>${r.emp}</td></tr>`;
+            });
+        } else if (currentReportType === 'salaries') {
+            cols = ['Дата', 'Сотрудник', 'Сумма'];
+            data.table.forEach(r => {
+                body.innerHTML += `<tr><td style="padding:16px 24px;">${r.date}</td><td>${r.emp}</td><td>${formatBusinessVal(r.amount, true)}</td></tr>`;
+            });
+        } else if (currentReportType === 'credits') {
+            cols = ['ID', 'Тело кредита', 'Остаток', 'Ставка %', 'Статус'];
+            data.table.forEach(r => {
+                const badge = r.status_type === 'paid'
+                    ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.4px;"><i class="fas fa-check-circle"></i> Погашен</span>`
+                    : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fee2e2;color:#dc2626;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.4px;"><i class="fas fa-exclamation-circle"></i> Активный</span>`;
+                body.innerHTML += `<tr><td style="padding:16px 24px;">#${r.id}</td><td style="padding:16px 24px;">${formatBusinessVal(r.amount, true)}</td><td style="padding:16px 24px;font-weight:700;color:#dc2626;">${formatBusinessVal(r.remaining, true)}</td><td style="padding:16px 24px;">${r.rate}%</td><td style="padding:16px 24px;">${badge}</td></tr>`;
+            });
+        } else if (currentReportType === 'profit') {
+            cols = ['Дата', 'Тип операции', 'Приход', 'Расход', 'Результат', 'Связанная заявка'];
+            data.table.forEach(r => {
+                const color = r.profit < 0 ? 'var(--danger)' : 'var(--success)';
+                const profitSign = r.profit > 0 ? '+' : '';
+                const reqLink = r.req_id 
+                    ? `<a href="/production-requests/" style="color:var(--primary); font-weight:700; text-decoration:none;">Заявка #${r.req_id}</a>`
+                    : `<span style="color:var(--text-muted);">—</span>`;
+                body.innerHTML += `
+                    <tr>
+                        <td style="padding:16px 24px; color: var(--text-muted);">${r.date}</td>
+                        <td style="padding:16px 24px; font-weight:600;">${r.type}</td>
+                        <td style="padding:16px 24px; color: var(--success); font-weight:600;">${r.income > 0 ? formatBusinessVal(r.income, true) : '—'}</td>
+                        <td style="padding:16px 24px; color: var(--danger); font-weight:600;">${r.expense > 0 ? formatBusinessVal(r.expense, true) : '—'}</td>
+                        <td style="padding:16px 24px; font-weight:800; color:${color}">${profitSign}${formatBusinessVal(r.profit, true)}</td>
+                        <td style="padding:16px 24px;">${reqLink}</td>
+                    </tr>`;
+            });
+        } else if (currentReportType === 'erp_requests') {
+            cols = ['Дата', 'ID', 'Продукция', 'Кол-во', 'Статус', 'Прибыль'];
+            data.table.forEach(r => {
+                const color = r.status === 'Выполнена' ? 'var(--success)' : (r.status === 'Ошибка' ? 'var(--danger)' : 'var(--primary)');
+                body.innerHTML += `
+                    <tr>
+                        <td style="padding:16px 24px;">${r.date}</td>
+                        <td style="padding:16px 24px; font-weight:700;">#${r.id}</td>
+                        <td style="padding:16px 24px;">${r.product}</td>
+                        <td style="padding:16px 24px; font-weight:700;">${r.qty}</td>
+                        <td style="padding:16px 24px;"><span style="color:${color}; font-weight:800;">${r.status}</span></td>
+                        <td style="padding:16px 24px; font-weight:800; color:var(--success)">${r.profit > 0 ? formatBusinessVal(r.profit, true) : '—'}</td>
+                    </tr>`;
+            });
+        } else if (currentReportType === 'erp_production') {
+            cols = ['Дата', 'Продукция', 'Кол-во', 'Тип'];
+            data.table.forEach(r => {
+                body.innerHTML += `
+                    <tr>
+                        <td style="padding:16px 24px;">${r.date}</td>
+                        <td style="padding:16px 24px; font-weight:600;">${r.item}</td>
+                        <td style="padding:16px 24px; font-weight:700;">${formatBusinessVal(r.qty)}</td>
+                        <td style="padding:16px 24px;"><span class="tag ${r.type === 'Авто' ? 'tag-success' : ''}">${r.type}</span></td>
+                    </tr>`;
+            });
+        } else if (currentReportType === 'erp_profit') {
+            cols = ['Дата', 'Операция', 'Доход', 'Расход', 'Прибыль'];
+            data.table.forEach(r => {
+                const color = r.profit < 0 ? 'var(--danger)' : 'var(--success)';
+                body.innerHTML += `
+                    <tr>
+                        <td style="padding:16px 24px;">${r.date}</td>
+                        <td style="padding:16px 24px; font-weight:600;">${r.type}</td>
+                        <td style="padding:16px 24px; color:var(--success); font-weight:600;">${r.income > 0 ? formatBusinessVal(r.income, true) : '—'}</td>
+                        <td style="padding:16px 24px; color:var(--danger); font-weight:600;">${r.expense > 0 ? formatBusinessVal(r.expense, true) : '—'}</td>
+                        <td style="padding:16px 24px; font-weight:800; color:${color}">${formatBusinessVal(r.profit, true)}</td>
+                    </tr>`;
+            });
+        }
+
+        head.innerHTML = `<tr>${cols.map(c => `<th style="padding:16px 24px;">${c}</th>`).join('')}</tr>`;
+    }
+
+    function filterTable() {
+        const val = document.getElementById('tableSearch').value.toLowerCase();
+        const rows = document.getElementById('tableBody').getElementsByTagName('tr');
+        for (let r of rows) {
+            r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadReport);
+</script>
+{% endblock %}

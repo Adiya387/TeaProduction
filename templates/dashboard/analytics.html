@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container" style="padding: 24px;">
+    <!-- Header -->
+    <div class="header-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 24px; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 4px;">
+                <i class="fas fa-chart-line" style="color: var(--primary); margin-right: 12px;"></i>Аналитика заявок
+            </h1>
+            <p style="color: #64748b; font-size: 14px;">Статистика эффективности автоматизированных процессов ERP</p>
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 8px 16px; border-radius: 12px; border: 1px solid var(--border-light);">
+                <i class="far fa-calendar-alt" style="color: #64748b;"></i>
+                <input type="date" id="dateStart" style="border: none; background: transparent; font-size: 13px; color: #1e293b; font-weight: 600; outline: none;">
+                <span style="color: #94a3b8;">—</span>
+                <input type="date" id="dateEnd" style="border: none; background: transparent; font-size: 13px; color: #1e293b; font-weight: 600; outline: none;">
+            </div>
+            <button class="btn-primary" onclick="loadAnalytics()" style="width: auto; padding: 12px 24px; border-radius: 12px;">
+                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 24px;">
+        <div class="stat-card" style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-light); position: relative; overflow: hidden;">
+            <div style="font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Всего заявок</div>
+            <div id="stat_total" style="font-size: 28px; font-weight: 800; color: #1e293b;">0</div>
+            <div style="display: flex; gap: 12px; margin-top: 12px;">
+                <span id="stat_completed" style="font-size: 11px; font-weight: 700; color: #059669; background: #ecfdf5; padding: 2px 8px; border-radius: 6px;">Выполнено: 0</span>
+                <span id="stat_errors" style="font-size: 11px; font-weight: 700; color: #dc2626; background: #fef2f2; padding: 2px 8px; border-radius: 6px;">Ошибок: 0</span>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-light);">
+            <div style="font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Общая прибыль (Авто)</div>
+            <div id="stat_profit" style="font-size: 28px; font-weight: 800; color: #059669;">0 сом</div>
+            <div style="font-size: 11px; color: #64748b; margin-top: 12px;">Себестоимость: <span id="stat_cost" style="font-weight: 700; color: #334155;">0 сом</span></div>
+        </div>
+
+        <div class="stat-card" style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-light);">
+            <div style="font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Топ товары</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-size: 13px; color: #334155;">Продажи: <span id="stat_top_sold" style="font-weight: 800; color: var(--primary);">—</span></div>
+                <div style="font-size: 13px; color: #334155;">Выпуск: <span id="stat_top_produced" style="font-weight: 800; color: var(--secondary);">—</span></div>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-light);">
+            <div style="font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">Авто-операции</div>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-size: 11px; font-weight: 700; color: #475569;">Закупок: <span id="stat_auto_pur" style="color: #2563eb;">0</span></div>
+                <div style="font-size: 11px; font-weight: 700; color: #475569;">Производств: <span id="stat_auto_prod" style="color: #7c3aed;">0</span></div>
+                <div style="font-size: 11px; font-weight: 700; color: #475569;">Продаж: <span id="stat_auto_sale" style="color: #059669;">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <!-- Daily Requests Chart -->
+        <div class="card" style="background: white; padding: 24px; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            <div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 24px;">Активность заявок по дням</div>
+            <div style="height: 300px;">
+                <canvas id="requestsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Profit Chart -->
+        <div class="card" style="background: white; padding: 24px; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+            <div style="font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 24px;">Динамика прибыли</div>
+            <div style="height: 300px;">
+                <canvas id="profitChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let reqChart = null;
+    let profitChart = null;
+
+    async function loadAnalytics() {
+        const icon = document.getElementById('refreshIcon');
+        if (icon) icon.classList.add('fa-spin');
+        
+        const start = document.getElementById('dateStart').value;
+        const end = document.getElementById('dateEnd').value;
+        
+        try {
+            const res = await fetch(`/api/analytics_data/?start=${start}&end=${end}`);
+            const data = await res.json();
+            
+            if (data.error) throw new Error(data.error);
+            
+            updateSummary(data.summary);
+            renderCharts(data.charts);
+            
+        } catch(e) {
+            console.error('Analytics load error', e);
+            showToast('Ошибка загрузки аналитики', 'error');
+        } finally {
+            if (icon) setTimeout(() => icon.classList.remove('fa-spin'), 500);
+        }
+    }
+
+    function updateSummary(s) {
+        document.getElementById('stat_total').textContent = s.total_created;
+        document.getElementById('stat_completed').textContent = `Выполнено: ${s.completed}`;
+        document.getElementById('stat_errors').textContent = `Ошибок: ${s.errors}`;
+        document.getElementById('stat_profit').textContent = formatMoney(s.total_profit);
+        document.getElementById('stat_cost').textContent = formatMoney(s.total_cost);
+        document.getElementById('stat_top_sold').textContent = s.top_sold_product;
+        document.getElementById('stat_top_produced').textContent = s.top_produced_product;
+        document.getElementById('stat_auto_pur').textContent = s.auto_purchases;
+        document.getElementById('stat_auto_prod').textContent = s.auto_productions;
+        document.getElementById('stat_auto_sale').textContent = s.auto_sales;
+    }
+
+    function renderCharts(c) {
+        // 1. Requests Chart
+        if (reqChart) reqChart.destroy();
+        const ctxReq = document.getElementById('requestsChart').getContext('2d');
+        reqChart = new Chart(ctxReq, {
+            type: 'line',
+            data: {
+                labels: c.labels,
+                datasets: [{
+                    label: 'Заявки',
+                    data: c.requests,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#2563eb',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 1 } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // 2. Profit Chart
+        if (profitChart) profitChart.destroy();
+        const ctxProfit = document.getElementById('profitChart').getContext('2d');
+        profitChart = new Chart(ctxProfit, {
+            type: 'bar',
+            data: {
+                labels: c.labels,
+                datasets: [{
+                    label: 'Прибыль',
+                    data: c.profit,
+                    backgroundColor: '#10b981',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    function formatMoney(val) {
+        return new Intl.NumberFormat('ru-RU').format(Math.abs(val)) + ' сом';
+    }
+
+    function showToast(msg, type='success') {
+        const toast = document.createElement('div');
+        toast.style.cssText = `position: fixed; bottom: 24px; right: 24px; padding: 16px 24px; border-radius: 12px; background: ${type==='success'?'#059669':'#dc2626'}; color: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 9999; font-weight: 600; transition: all 0.3s ease-in-out;`;
+        toast.innerHTML = (type==='success'?'<i class="fas fa-check-circle"></i> ':'<i class="fas fa-exclamation-circle"></i> ') + msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 7);
+        
+        document.getElementById('dateEnd').value = end.toISOString().split('T')[0];
+        document.getElementById('dateStart').value = start.toISOString().split('T')[0];
+        
+        loadAnalytics();
+    });
+</script>
+{% endblock %}

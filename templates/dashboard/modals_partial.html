@@ -1,0 +1,212 @@
+<!-- Purchase Modal -->
+<div class="modal-overlay" id="purchaseModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Закупка сырья</h2>
+            <button class="btn-close" onclick="closeModal('purchaseModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/purchase/', 'purchaseModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Выберите сырье</label>
+                    <select id="pur_rm" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="pur_qty" class="form-control" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Общая стоимость (сом)</label>
+                    <input type="number" id="pur_amount" class="form-control" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Ответственный сотрудник</label>
+                    <select id="pur_emp" class="form-control" required></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('purchaseModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Зарегистрировать</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Production Modal -->
+<div class="modal-overlay" id="productionModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Запуск производства</h2>
+            <button class="btn-close" onclick="closeModal('productionModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/production/', 'productionModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Выберите продукт для выпуска</label>
+                    <select id="prod_product" class="form-control" required onchange="checkIngredients(this.value, document.getElementById('prod_qty').value)"></select>
+                </div>
+                <div id="productStockCheck" style="background:#f8fafc; padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid #e2e8f0;">
+                    <div style="font-size:10px; font-weight:800; color:#64748b; margin-bottom:10px; text-transform: uppercase; letter-spacing: 0.5px;">Текущая продукция на складе:</div>
+                    <div id="prodStockList" style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;"></div>
+                </div>
+                <div id="ingredientsCheck" style="display:none; background:#f0fdf4; padding:16px; border-radius:12px; margin-bottom:16px; border:1px solid #d1fae5;">
+                    <div style="font-size:10px; font-weight:800; color:var(--primary); margin-bottom:10px; text-transform: uppercase; letter-spacing: 0.5px;">Наличие ингредиентов:</div>
+                    <div id="ingList" style="display:flex; flex-direction:column; gap:6px;"></div>
+                </div>
+                <div class="form-group">
+                    <label>Количество единиц</label>
+                    <input type="number" id="prod_qty" class="form-control" value="1" step="1" required oninput="checkIngredients(document.getElementById('prod_product').value, this.value)" placeholder="Введите количество...">
+                    <div id="maxProductionInfo" style="display:none; font-size: 13px; font-weight: 600; margin-top: 10px; color: #475569; background: #f1f5f9; padding: 8px 12px; border-radius: 8px; border-left: 4px solid var(--primary);">
+                        Максимально можно произвести: <span id="maxProductionValue" style="color: var(--primary); font-weight: 800;">0</span> ед.
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Мастер смены</label>
+                    <select id="prod_emp" class="form-control" required></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('productionModal')">Отмена</button>
+                <button type="submit" class="btn-primary" id="btnProdSubmit">Запустить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Sale Modal -->
+<div class="modal-overlay" id="saleModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Регистрация продажи</h2>
+            <button class="btn-close" onclick="closeModal('saleModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/sale/', 'saleModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Продукт</label>
+                    <select id="sale_product" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="sale_qty" class="form-control" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Сумма сделки (сом)</label>
+                    <input type="number" id="sale_amount" class="form-control" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Продавец</label>
+                    <select id="sale_emp" class="form-control" required></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('saleModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Оформить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Credit Modal -->
+<div class="modal-overlay" id="creditModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Получение кредита</h2>
+            <button class="btn-close" onclick="closeModal('creditModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/credit/', 'creditModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Сумма кредита (сом)</label>
+                    <input type="number" id="cr_amount" class="form-control" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label>Процентная ставка (%)</label>
+                    <input type="number" id="cr_rate" class="form-control" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('creditModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Получить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Salary Modal -->
+<div class="modal-overlay" id="salaryModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Выплата зарплаты</h2>
+            <button class="btn-close" onclick="closeModal('salaryModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/salary/', 'salaryModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Сотрудник</label>
+                    <select id="sal_emp" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Сумма выплаты (сом)</label>
+                    <input type="number" id="sal_amount" class="form-control" step="0.01" placeholder="0.00" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('salaryModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Выплатить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Production Request Modal (Phase 2 Automation) -->
+<div class="modal-overlay" id="productionRequestModal">
+    <div class="modal-box" style="width: 600px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Новая автоматическая заявка</h2>
+            <button class="btn-close" onclick="closeModal('productionRequestModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form onsubmit="submitForm(event, '/api/create_production_request/', 'productionRequestModal')">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Выберите продукцию</label>
+                    <select id="req_product" class="form-control" required onchange="calculateRequestMetrics()"></select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="req_qty" class="form-control" value="1" step="1" required oninput="calculateRequestMetrics()" placeholder="Введите количество...">
+                </div>
+                
+                <!-- Financial Forecasting Panel -->
+                <div style="background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; margin-top: 10px;">
+                    <div style="font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 0.5px;">Прогноз выполнения (Автоматика):</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Текущий бюджет:</div>
+                            <div id="req_current_budget" style="font-size: 16px; font-weight: 700; color: #1e293b;">0 сом</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Себестоимость:</div>
+                            <div id="req_est_cost" style="font-size: 16px; font-weight: 700; color: #ef4444;">0 сом</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Ожидаемая прибыль:</div>
+                            <div id="req_est_profit" style="font-size: 16px; font-weight: 700; color: #10b981;">0 сом</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px;">Итоговый бюджет:</div>
+                            <div id="req_final_budget" style="font-size: 16px; font-weight: 800; color: var(--primary);">0 сом</div>
+                        </div>
+                    </div>
+                    
+                    <div id="req_stock_alert" style="margin-top: 15px; font-size: 12px; padding: 12px; border-radius: 10px; display: none;"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('productionRequestModal')">Отмена</button>
+                <button type="submit" class="btn-primary" id="btnReqSubmit">Создать заявку</button>
+            </div>
+        </form>
+    </div>
+</div>

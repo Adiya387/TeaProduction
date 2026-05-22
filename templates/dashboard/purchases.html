@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Журнал закупок</h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-primary" style="width: auto; padding: 12px 24px; background: var(--secondary);" onclick="openModal('stockViewModal')">
+                <i class="fas fa-warehouse"></i> Наличие на складе
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск по сырью..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openModal('purchaseModal')">
+                <i class="fas fa-plus"></i> Новая закупка
+            </button>
+        </div>
+    </div>
+
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <thead style="background: #f8fafc; position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сырье</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Кол-во</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сумма</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Дата</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сотрудник</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Связанная заявка</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for i in items %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 16px 24px;">{{ i.raw_material.name|default:"Удалено" }}</td>
+                        <td style="padding: 16px 24px;">{{ i.quantity|floatformat:2 }}</td>
+                        <td style="padding: 16px 24px; font-weight: 700; color: var(--danger);" class="format-amt">{{ i.total_amount }}</td>
+                        <td style="padding: 16px 24px; color: var(--text-muted);">{{ i.date|date:"d.m.Y H:i" }}</td>
+                        <td style="padding: 16px 24px;">{{ i.employee|default:"—" }}</td>
+                        <td style="padding: 16px 24px;">
+                            {% if i.related_request %}
+                                <a href="/production-requests/" style="color:var(--primary); font-weight:700; text-decoration:none;">Заявка #{{ i.related_request.id }}</a>
+                            {% else %}
+                                <span style="color:var(--text-muted);">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="purchaseModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Регистрация закупки</h2>
+            <button class="btn-close" onclick="closeModal('purchaseModal')" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="purchaseForm">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div style="background: #f1f5f9; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #e2e8f0;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                        <span style="color: #64748b; font-weight: 500;">Текущий бюджет:</span>
+                        <span style="font-weight: 800; color: var(--success);" id="modal_budget">{{ budget }}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span style="color: #64748b; font-weight: 500;">Остаток после закупки:</span>
+                        <span style="font-weight: 800;" id="modal_remain">---</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Сырье</label>
+                    <select id="pur_rm" class="form-control" required>
+                        <option value="" disabled selected>Выберите сырье...</option>
+                        {% for rm in raw_materials %}
+                        <option value="{{ rm.id }}">{{ rm.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="pur_qty" class="form-control" step="0.01" required oninput="calcPurTotal()" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Цена за ед. (сом)</label>
+                    <input type="number" id="pur_price" class="form-control" step="0.01" placeholder="0.00" oninput="calcPurTotal()">
+                </div>
+                <div class="form-group">
+                    <label>Общая сумма закупки (сом)</label>
+                    <input type="number" id="pur_amount" class="form-control" step="0.01" required oninput="calcBudgetRemain()" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Ответственный сотрудник</label>
+                    <select id="pur_emp" class="form-control" required>
+                        <option value="" disabled selected>Выберите сотрудника...</option>
+                        {% for e in employees %}
+                        <option value="{{ e.id }}">{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('purchaseModal')">Отмена</button>
+                <button type="submit" id="btnSubmit" class="btn-primary">Подтвердить закупку</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stock View Modal (Small overlay) -->
+<div class="modal-overlay" id="stockViewModal" style="z-index: 3000;">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Текущие остатки сырья</h2>
+            <button class="btn-close" onclick="closeModal('stockViewModal')" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="stockListContainer" style="max-height: 400px; overflow-y: auto;">
+            <!-- Will be populated via JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" style="width: 100%;" onclick="closeModal('stockViewModal')">
+                Вернуться к заказу
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentBudget = {{ budget }};
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function calcPurTotal() {
+        const qty = parseFloat(document.getElementById('pur_qty').value) || 0;
+        const price = parseFloat(document.getElementById('pur_price').value) || 0;
+        if (price > 0) {
+            document.getElementById('pur_amount').value = (qty * price).toFixed(2);
+        }
+        calcBudgetRemain();
+    }
+
+    function calcBudgetRemain() {
+        const amt = parseFloat(document.getElementById('pur_amount').value) || 0;
+        const remain = currentBudget - amt;
+        const remainEl = document.getElementById('modal_remain');
+        const btn = document.getElementById('btnSubmit');
+        
+        remainEl.textContent = formatBusinessVal(remain, true);
+        
+        if (remain < 0) {
+            remainEl.style.color = 'var(--danger)';
+            btn.disabled = true; btn.style.opacity = '0.5';
+            btn.textContent = "Недостаточно бюджета";
+        } else {
+            remainEl.style.color = 'var(--text-main)';
+            btn.disabled = false; btn.style.opacity = '1';
+            btn.textContent = "Подтвердить закупку";
+        }
+    }
+
+    async function refreshStockView() {
+        await updateDashboardData();
+    }
+
+    // Wrap openModal to refresh stock
+    const originalOpenModal = openModal;
+    window.openModal = function(id) {
+        if (id === 'stockViewModal') refreshStockView();
+        originalOpenModal(id);
+    }
+
+    document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
+
+        try {
+            const payload = {
+                raw_material_id: document.getElementById('pur_rm').value,
+                quantity: document.getElementById('pur_qty').value,
+                total_amount: document.getElementById('pur_amount').value,
+                employee_id: document.getElementById('pur_emp').value
+            };
+            
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            const res = await fetch('/api/purchase/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': csrftoken 
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            let data;
+            try {
+                data = await res.json();
+            } catch (e) {
+                throw new Error('Сервер вернул некорректный ответ (не JSON)');
+            }
+
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message || 'Закупка успешно выполнена');
+                closeModal('purchaseModal');
+                document.getElementById('purchaseForm').reset();
+                await Promise.all([fetchPurchases(), updateDashboardData()]);
+            } else {
+                showToast(data.message || 'Ошибка сервера', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Сетевая ошибка или сбой программы', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Подтвердить закупку';
+        }
+    });
+
+    async function fetchPurchases() {
+        const res = await fetch('/api/get_purchases/');
+        const data = await res.json();
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        data.purchases.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--border-light)';
+            tr.innerHTML = `
+                <td style="padding: 16px 24px;">${p.item}</td>
+                <td style="padding: 16px 24px;">${formatBusinessVal(p.qty)}</td>
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--danger);">${formatBusinessVal(p.amount, true)}</td>
+                <td style="padding: 16px 24px; color: var(--text-muted);">${p.date}</td>
+                <td style="padding: 16px 24px;">${p.emp}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function updateDashboardData() {
+        const res = await fetch('/api/dashboard_data/');
+        const data = await res.json();
+        currentBudget = data.budget;
+        document.getElementById('modal_budget').textContent = formatBusinessVal(currentBudget, true);
+        document.getElementById('header-budget').textContent = formatBusinessVal(currentBudget);
+        
+        // Update stock view modal
+        const container = document.getElementById('stockListContainer');
+        container.innerHTML = '';
+        data.raw_materials.forEach(rm => {
+            const item = document.createElement('div');
+            item.style.display = 'flex';
+            item.style.justifyContent = 'space-between';
+            item.style.padding = '8px 0';
+            item.style.borderBottom = '1px solid #f1f5f9';
+            const color = rm.low_stock ? 'var(--danger)' : 'var(--text-main)';
+            const warning = rm.low_stock ? '<i class="fas fa-exclamation-triangle" style="margin-right:4px"></i>' : '';
+            item.innerHTML = `
+                <span style="font-weight: 500;">${rm.name}</span>
+                <span style="font-weight: 700; color: ${color};">${warning}${formatBusinessVal(rm.quantity)} ${rm.unit}</span>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    function filterTable() {
+        const filter = document.getElementById("tableSearch").value.toUpperCase();
+        const trs = document.getElementById("tableBody").getElementsByTagName("tr");
+        for (let tr of trs) {
+            const txt = tr.getElementsByTagName("td")[2].textContent.toUpperCase();
+            tr.style.display = txt.indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('modal_budget').textContent = formatBusinessVal(currentBudget, true);
+        document.querySelectorAll('.format-amt').forEach(c => c.textContent = formatBusinessVal(c.textContent, true));
+        setInterval(fetchPurchases, 10000);
+        setInterval(updateDashboardData, 10000);
+    });
+</script>
+{% endblock %}

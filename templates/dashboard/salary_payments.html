@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Архив зарплат</h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск по сотруднику..." onkeyup="filterTable()">
+            </div>
+            <div class="search-box">
+                <i class="far fa-calendar-alt"></i>
+                <input type="month" id="monthFilter" onchange="filterTable()" style="border:none; outline:none; background:transparent; font-family:'Outfit';">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openAddModal()">
+                <i class="fas fa-hand-holding-usd"></i> Зарегистрировать выплату
+            </button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <thead style="background: #f8fafc; position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Дата и время</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сотрудник</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сумма выплаты</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Статус</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for item in items|dictsortreversed:"date" %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 16px 24px; color: var(--text-muted);" class="date-cell" data-date="{{ item.date|date:'Y-m' }}">{{ item.date|date:"d.m.Y H:i" }}</td>
+                        <td style="padding: 16px 24px; font-weight: 600;">{{ item.employee|default:"Удаленный сотрудник" }}</td>
+                        <td style="padding: 16px 24px; font-weight: 700; color: var(--text-main);" class="format-amt">
+                            {{ item.amount }}
+                        </td>
+                        <td style="padding: 16px 24px;">
+                            <span style="display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#15803d; padding:5px 12px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:0.4px;">
+                                <i class="fas fa-check-circle"></i> Выплачено
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="crudModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Регистрация выплаты</h2>
+            <button class="btn-close" onclick="closeModal('crudModal')" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="salaryForm">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Выберите сотрудника</label>
+                    <select name="employee_id" id="item_emp" class="form-control" required onchange="fetchEmployeeInfo(this.value)">
+                        <option value="" disabled selected>-- Выберите сотрудника --</option>
+                        {% for e in employees %}
+                        <option value="{{ e.id }}">{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div id="paymentInfoBlock" style="display:none; margin-bottom: 24px; padding: 16px; border-radius: 12px; background: #f8fafc; border: 1px solid var(--border-light);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 13px; color: var(--text-muted); font-weight: 600;">Статус выплат за месяц:</span>
+                        <span id="paymentCountBadge" style="font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 100px; text-transform: uppercase;"></span>
+                    </div>
+                    <div style="font-size: 13px; color: #475569; line-height: 1.5;" id="paymentLimitMessage"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Сумма выплаты (автоматически)</label>
+                    <div style="position: relative;">
+                        <input type="number" name="amount" id="item_amt" class="form-control" step="0.01" required readonly style="background: #f8fafc; cursor: not-allowed; padding-right: 45px;">
+                        <span style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-weight: 700; color: #94a3b8;">сом</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('crudModal')">Отмена</button>
+                <button type="submit" id="btnSave" class="btn-primary">Сохранить выплату</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function openAddModal() {
+        document.getElementById('item_emp').value = "";
+        document.getElementById('item_amt').value = "";
+        document.getElementById('paymentInfoBlock').style.display = 'none';
+        
+        const btn = document.getElementById('btnSave');
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        
+        openModal('crudModal');
+    }
+
+    async function fetchEmployeeInfo(empId) {
+        if (!empId) return;
+        
+        try {
+            const res = await fetch(`/api/employee_salary_info/${empId}/`);
+            const data = await res.json();
+            
+            document.getElementById('item_amt').value = data.salary;
+            
+            const infoBlock = document.getElementById('paymentInfoBlock');
+            const badge = document.getElementById('paymentCountBadge');
+            const msg = document.getElementById('paymentLimitMessage');
+            const btn = document.getElementById('btnSave');
+            
+            infoBlock.style.display = 'block';
+            
+            const count = data.payments_this_month;
+            badge.textContent = `Выплат в этом месяце: ${count} из 2`;
+            
+            if (count === 0) {
+                badge.style.background = '#e2e8f0';
+                badge.style.color = '#475569';
+                msg.textContent = 'Выплат в текущем месяце еще не было. Можно выдать зарплату.';
+                msg.style.color = '#475569';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else if (count === 1) {
+                badge.style.background = '#e0f2fe';
+                badge.style.color = '#0369a1';
+                msg.textContent = 'Это вторая (последняя) выплата в текущем месяце.';
+                msg.style.color = '#0369a1';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                badge.style.background = '#dcfce7';
+                badge.style.color = '#15803d';
+                badge.textContent = `Лимит выполнен (${count} из 2)`;
+                msg.textContent = 'Лимит выплат за месяц исчерпан.';
+                msg.style.color = 'var(--danger)';
+                msg.style.fontWeight = '600';
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+            
+        } catch(e) {
+            console.error('Error fetching employee info:', e);
+            showToast('Ошибка при загрузке данных сотрудника', 'error');
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.getElementById('salaryForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('btnSave');
+        if (btn.disabled) return;
+        
+        const empId = document.getElementById('item_emp').value;
+        const amt = document.getElementById('item_amt').value;
+        
+        try {
+            const res = await fetch('/api/salary/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ employee_id: empId, amount: amt })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message, 'success');
+                
+                // Immediately refresh the table from server to show the new record
+                await fetchSalaries();
+                
+                // Refresh employee info to update limits visually
+                fetchEmployeeInfo(empId);
+                
+            } else {
+                showToast(data.message || 'Произошла ошибка', 'error');
+            }
+        } catch(e) {
+            console.error('Error saving payment:', e);
+            showToast('Ошибка сети', 'error');
+        }
+    });
+
+    function filterTable() {
+        const searchInput = document.getElementById("tableSearch").value.toUpperCase();
+        const monthInput = document.getElementById("monthFilter").value; // Format: YYYY-MM
+        const table = document.getElementById("dataTable");
+        const tr = table.getElementsByTagName("tr");
+        
+        for (let i = 1; i < tr.length; i++) {
+            let foundSearch = false;
+            let foundMonth = false;
+            
+            const tds = tr[i].getElementsByTagName("td");
+            
+            if (tds.length > 1) {
+                if (tds[1].textContent.toUpperCase().indexOf(searchInput) > -1) {
+                    foundSearch = true;
+                }
+            }
+            
+            if (monthInput) {
+                const dateCell = tds[0];
+                if (dateCell && dateCell.getAttribute('data-date') === monthInput) {
+                    foundMonth = true;
+                }
+            } else {
+                foundMonth = true;
+            }
+            
+            tr[i].style.display = (foundSearch && foundMonth) ? "" : "none";
+        }
+    }
+
+    // Polling function for real-time sync with server/SQL
+    async function fetchSalaries() {
+        try {
+            const res = await fetch('/api/get_salaries/');
+            if (!res.ok) return;
+            const data = await res.json();
+            
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            data.salaries.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-light)';
+                const formattedAmt = formatBusinessVal(item.amount, true);
+                
+                tr.innerHTML = `
+                    <td style="padding: 16px 24px; color: var(--text-muted);" class="date-cell" data-date="${item.raw_date}">${item.date}</td>
+                    <td style="padding: 16px 24px; font-weight: 600;">${item.employee_name}</td>
+                    <td style="padding: 16px 24px; font-weight: 700; color: var(--text-main);">${formattedAmt}</td>
+                    <td style="padding: 16px 24px;">
+                        <span style="display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#15803d; padding:5px 12px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:0.4px;">
+                            <i class="fas fa-check-circle"></i> Выплачено
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            // Re-apply filters so the user's view doesn't jump
+            filterTable();
+        } catch(e) {
+            console.error("Error syncing salaries:", e);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.format-amt').forEach(cell => {
+            cell.textContent = formatBusinessVal(cell.textContent.trim(), true);
+        });
+        
+        // Start polling every 10 seconds
+        setInterval(fetchSalaries, 10000);
+    });
+</script>
+{% endblock %}

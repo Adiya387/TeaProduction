@@ -1,0 +1,257 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container" style="padding: 24px;">
+    <!-- Header -->
+    <div class="header-card" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 24px; border-radius: 16px; border: 1px solid var(--border-light); box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div>
+            <h1 style="font-size: 24px; font-weight: 800; color: #1e293b; margin-bottom: 4px;">
+                <i class="fas fa-history" style="color: var(--primary); margin-right: 12px;"></i>Общий журнал ERP
+            </h1>
+            <p style="color: #64748b; font-size: 14px;">Единая история всех автоматических и ручных операций системы</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <div class="search-box" style="position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                <input type="text" id="logSearch" placeholder="Поиск по товару, сотруднику..." 
+                    style="padding: 12px 16px 12px 40px; border-radius: 12px; border: 1px solid var(--border-light); width: 300px; font-size: 14px; outline: none; transition: all 0.2s;"
+                    oninput="filterLog()">
+            </div>
+            <button class="btn-primary" onclick="loadLog()" style="width: auto; padding: 0 20px; border-radius: 12px;">
+                <i class="fas fa-sync-alt" id="refreshIcon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters Row -->
+    <div style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+        <select id="filterType" class="filter-select" onchange="filterLog()">
+            <option value="">Все операции</option>
+            <option value="Закупка сырья">Закупки</option>
+            <option value="Производство">Производство</option>
+            <option value="Продажа ГП">Продажи</option>
+        </select>
+
+        <select id="filterSource" class="filter-select" onchange="filterLog()">
+            <option value="">Любой источник</option>
+            <option value="Авто">Автоматические</option>
+            <option value="Ручная">Ручные операции</option>
+        </select>
+
+    </div>
+
+    <!-- Main Log Table -->
+    <div class="card" style="padding: 0; overflow: hidden; border-radius: 16px; border: 1px solid var(--border-light); background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+        <div style="max-height: calc(100vh - 300px); overflow-y: auto;">
+            <table id="logTable" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                <thead id="logHeader" style="background: #f8fafc; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #edf2f7;">
+                    <!-- Header will be dynamic -->
+                </thead>
+                <tbody id="logBody">
+                    <!-- Data will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Styles -->
+<style>
+    .filter-select {
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid var(--border-light);
+        background: white;
+        color: #475569;
+        font-size: 14px;
+        font-weight: 600;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .filter-select:hover { border-color: var(--primary); }
+
+    .source-badge {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    .badge-auto { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+    .badge-manual { background: #fdf2f7; color: #db2777; border: 1px solid #fce7f3; }
+
+    .op-type { font-weight: 700; color: #1e293b; }
+    .val-positive { color: #059669; font-weight: 700; }
+    .val-negative { color: #dc2626; font-weight: 700; }
+    .val-neutral { color: #64748b; font-weight: 600; }
+
+    tr:hover { background: #f8fafc; }
+
+    /* Switch Style */
+    .switch { position: relative; display: inline-block; width: 34px; height: 20px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
+    .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(14px); }
+
+    .sticky-header th { background: #f8fafc; }
+</style>
+
+<!-- Scripts -->
+<script>
+    let fullLog = [];
+
+    async function loadLog() {
+        const icon = document.getElementById('refreshIcon');
+        if (icon) icon.classList.add('fa-spin');
+        
+        try {
+            const res = await fetch('/api/get_erp_log/');
+            const data = await res.json();
+            fullLog = data.log || [];
+            filterLog();
+        } catch(e) {
+            console.error('Log load error', e);
+            showToast('Ошибка загрузки журнала', 'error');
+        } finally {
+            if (icon) setTimeout(() => icon.classList.remove('fa-spin'), 500);
+        }
+    }
+
+    function filterLog() {
+        const search = document.getElementById('logSearch').value.toLowerCase();
+        const type = document.getElementById('filterType').value;
+        const source = document.getElementById('filterSource').value;
+
+        const filtered = fullLog.filter(item => {
+            const matchSearch = !search || 
+                item.item.toLowerCase().includes(search) || 
+                item.emp.toLowerCase().includes(search) ||
+                (item.req_id && item.req_id.toString().includes(search));
+            
+            const matchType = !type || item.type.includes(type) || (type === 'Кредит' && item.type.includes('Кредит'));
+            const matchSource = !source || item.source === source;
+
+            return matchSearch && matchType && matchSource;
+        });
+
+        renderLog(filtered);
+    }
+
+    function renderLog(items) {
+        const body = document.getElementById('logBody');
+        const currentType = document.getElementById('filterType').value;
+        
+        // Update Header and get column count
+        const colCount = updateHeader(currentType);
+
+        if (items.length === 0) {
+            body.innerHTML = `<tr><td colspan="${colCount}" style="padding: 60px; text-align: center; color: #94a3b8;">Нет данных по заданным фильтрам</td></tr>`;
+            return;
+        }
+
+        body.innerHTML = items.map(i => {
+            const sourceClass = i.source === 'Авто' ? 'badge-auto' : 'badge-manual';
+            const profitClass = i.profit > 0 ? 'val-positive' : (i.profit < 0 ? 'val-negative' : 'val-neutral');
+            const amountClass = i.income > 0 ? 'val-positive' : (i.expense > 0 ? 'val-negative' : 'val-neutral');
+            
+            const reqLink = i.req_id ? `<div style="font-size: 10px; color: var(--primary); font-weight: 700; margin-top: 2px;">Заявка #${i.req_id}</div>` : '';
+            
+            const isPurchase = i.type === 'Закупка сырья';
+            const isProduction = i.type === 'Производство';
+            const isSale = i.type === 'Продажа ГП';
+
+            // Dynamic columns logic
+            let rowHtml = `
+                <td style="padding: 16px 20px; color: #64748b; white-space: nowrap;">${i.date}</td>
+                <td style="padding: 16px 20px;">
+                    <div class="op-type">${i.type}</div>
+                    ${reqLink}
+                </td>
+                <td style="padding: 16px 20px;">
+                    <span class="source-badge ${sourceClass}">${i.source}</span>
+                </td>
+                <td style="padding: 16px 20px; font-weight: 600; color: #334155;">${i.item}</td>
+                <td style="padding: 16px 20px; text-align: right; font-weight: 700;">${i.qty > 0 ? i.qty + ' ед.' : '—'}</td>
+            `;
+
+            if (currentType === '') {
+                // All Operations
+                rowHtml += `<td style="padding: 16px 20px; text-align: right;" class="${amountClass}">${isProduction ? '—' : (i.income > 0 ? '+' : '-') + formatMoney(i.income || i.expense)}</td>`;
+                rowHtml += `<td style="padding: 16px 20px; text-align: right;" class="${profitClass}">${(isPurchase || isProduction) ? '—' : (i.profit > 0 ? '+' : '') + formatMoney(i.profit)}</td>`;
+                rowHtml += `<td style="padding: 16px 20px; text-align: right; font-weight: 800; color: var(--primary);">${isPurchase ? '—' : formatMoney(i.budget)}</td>`;
+            } else if (currentType === 'Закупка сырья') {
+                rowHtml += `<td style="padding: 16px 20px; text-align: right;" class="val-negative">-${formatMoney(i.expense)}</td>`;
+            } else if (currentType === 'Производство') {
+                // No extra columns
+            } else if (currentType === 'Продажа ГП') {
+                rowHtml += `<td style="padding: 16px 20px; text-align: right;" class="val-positive">+${formatMoney(i.income)}</td>`;
+                rowHtml += `<td style="padding: 16px 20px; text-align: right;" class="val-positive">+${formatMoney(i.profit)}</td>`;
+                rowHtml += `<td style="padding: 16px 20px; text-align: right; font-weight: 800; color: var(--primary);">${formatMoney(i.budget)}</td>`;
+            }
+
+            rowHtml += `<td style="padding: 16px 20px; color: #475569; font-weight: 600;">${i.emp}</td>`;
+            
+            return `<tr style="border-bottom: 1px solid #f1f5f9;">${rowHtml}</tr>`;
+        }).join('');
+    }
+
+    function updateHeader(type) {
+        const header = document.getElementById('logHeader');
+        let cols = [
+            { name: 'Дата и Время', align: 'left' },
+            { name: 'Операция', align: 'left' },
+            { name: 'Источник', align: 'left' },
+            { name: 'Объект', align: 'left' },
+            { name: 'Кол-во', align: 'right' }
+        ];
+
+        if (type === '') {
+            cols.push({ name: 'Сумма', align: 'right' });
+            cols.push({ name: 'Прибыль', align: 'right' });
+            cols.push({ name: 'Бюджет', align: 'right' });
+        } else if (type === 'Закупка сырья') {
+            cols.push({ name: 'Сумма', align: 'right' });
+        } else if (type === 'Производство') {
+            // No extra
+        } else if (type === 'Продажа ГП') {
+            cols.push({ name: 'Сумма', align: 'right' });
+            cols.push({ name: 'Прибыль', align: 'right' });
+            cols.push({ name: 'Бюджет', align: 'right' });
+        }
+
+        cols.push({ name: 'Сотрудник', align: 'left' });
+
+        header.innerHTML = `<tr>${cols.map(c => `
+            <th style="padding: 16px 20px; font-weight: 800; color: #64748b; font-size: 11px; text-transform: uppercase; ${c.align === 'right' ? 'text-align: right;' : ''}">${c.name}</th>
+        `).join('')}</tr>`;
+        
+        return cols.length;
+    }
+
+    function formatMoney(val) {
+        return new Intl.NumberFormat('ru-RU').format(Math.abs(val)) + ' сом';
+    }
+
+    function showToast(msg, type='success') {
+        const toast = document.createElement('div');
+        toast.style.cssText = `position: fixed; bottom: 24px; right: 24px; padding: 16px 24px; border-radius: 12px; background: ${type==='success'?'#059669':'#dc2626'}; color: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); z-index: 9999; font-weight: 600; transition: all 0.3s ease-in-out;`;
+        toast.innerHTML = (type==='success'?'<i class="fas fa-check-circle"></i> ':'<i class="fas fa-exclamation-circle"></i> ') + msg;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        loadLog();
+        
+        // Auto refresh setup
+        setInterval(() => {
+            loadLog();
+        }, 10000); // Every 10s
+    });
+</script>
+{% endblock %}

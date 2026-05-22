@@ -1,0 +1,289 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tea ERP - Панель управления</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1.2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Sidebar Collapse Styles */
+        .sidebar { transition: width 0.3s ease; }
+        .sidebar.collapsed { width: 80px; }
+        .sidebar.collapsed .sidebar-brand span, 
+        .sidebar.collapsed .menu-label, 
+        .sidebar.collapsed .menu-item span { display: none; }
+        .sidebar.collapsed .menu-item i { margin: 0; }
+        
+        .content-wrapper { transition: margin-left 0.3s ease; }
+
+        .sidebar-toggle { cursor: pointer; color: var(--text-muted); font-size: 18px; }
+        .sidebar-toggle:hover { color: var(--primary); }
+
+        .menu-scroll { flex: 1; overflow-y: auto; }
+        .menu-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        .header-right { display: flex; align-items: center; gap: 24px; }
+        .budget-pill { background: #f0fdf4; color: #059669; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 14px; border: 1px solid #d1fae5; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .logout-btn { color: #94a3b8; font-size: 14px; text-decoration: none; font-weight: 600; }
+        .logout-btn:hover { color: var(--danger); }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-leaf" style="color: var(--primary); font-size: 24px;"></i>
+            <span>Tea ERP</span>
+            <i class="fas fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
+        </div>
+
+        <div class="menu-scroll">
+            <div class="menu-section">
+                <a href="{% url 'dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fas fa-th-large"></i>
+                    <span>Дашборд</span>
+                </a>
+            </div>
+
+            {% if role != 'Accountant' %}
+            <div class="menu-section">
+                <div class="menu-label">Склады</div>
+                <a href="{% url 'raw_materials_list' %}" class="menu-item {% if request.resolver_match.url_name == 'raw_materials_list' %}active{% endif %}">
+                    <i class="fas fa-box-open"></i>
+                    <span>Сырье</span>
+                </a>
+                <a href="{% url 'products_list' %}" class="menu-item {% if request.resolver_match.url_name == 'products_list' %}active{% endif %}">
+                    <i class="fas fa-coffee"></i>
+                    <span>Продукция</span>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if role != 'Accountant' %}
+            <div class="menu-section">
+                <div class="menu-label">Завод</div>
+                <a href="{% if request.resolver_match.url_name == 'dashboard' %}#{% else %}{% url 'dashboard' %}{% endif %}" class="menu-item" {% if request.resolver_match.url_name == 'dashboard' %}onclick="openModal('productionModal')"{% endif %}>
+                    <i class="fas fa-industry"></i>
+                    <span>Производство</span>
+                </a>
+                <a href="{% url 'recipes_list' %}" class="menu-item {% if request.resolver_match.url_name == 'recipes_list' %}active{% endif %}">
+                    <i class="fas fa-scroll"></i>
+                    <span>Рецепты</span>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if role == 'Supervisor' %}
+            <div class="menu-section">
+                <div class="menu-label">Автоматизация</div>
+                <a href="{% url 'production_requests_page' %}" class="menu-item {% if request.resolver_match.url_name == 'production_requests_page' %}active{% endif %}">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Заявки на производство</span>
+                </a>
+                <a href="{% url 'erp_log_page' %}" class="menu-item {% if request.resolver_match.url_name == 'erp_log_page' %}active{% endif %}">
+                    <i class="fas fa-history"></i>
+                    <span>Общий журнал ERP</span>
+                </a>
+                <a href="{% url 'analytics_page' %}" class="menu-item {% if request.resolver_match.url_name == 'analytics_page' %}active{% endif %}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Аналитика заявок</span>
+                </a>
+            </div>
+            {% endif %}
+
+            {% if role == 'Admin' or role == 'Manager' or role == 'Supervisor' %}
+            <div class="menu-section">
+                <div class="menu-label">Операции</div>
+                <a href="{% url 'purchases_list' %}" class="menu-item {% if request.resolver_match.url_name == 'purchases_list' %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Закупки</span>
+                </a>
+                <a href="{% url 'production_list' %}" class="menu-item {% if request.resolver_match.url_name == 'production_list' %}active{% endif %}">
+                    <i class="fas fa-hammer"></i>
+                    <span>Производство</span>
+                </a>
+                <a href="{% url 'sales_list' %}" class="menu-item {% if request.resolver_match.url_name == 'sales_list' %}active{% endif %}">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Продажи</span>
+                </a>
+
+            </div>
+            {% endif %}
+
+            {% if role == 'Admin' or role == 'Accountant' or role == 'Supervisor' %}
+            <div class="menu-section">
+                <div class="menu-label">Справочники</div>
+                <a href="{% url 'units_list' %}" class="menu-item {% if request.resolver_match.url_name == 'units_list' %}active{% endif %}">
+                    <i class="fas fa-ruler-combined"></i>
+                    <span>Ед. измерения</span>
+                </a>
+                <a href="{% url 'positions_list' %}" class="menu-item {% if request.resolver_match.url_name == 'positions_list' %}active{% endif %}">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Должности</span>
+                </a>
+                <a href="{% url 'employees_list' %}" class="menu-item {% if request.resolver_match.url_name == 'employees_list' %}active{% endif %}">
+                    <i class="fas fa-users-cog"></i>
+                    <span>Сотрудники</span>
+                </a>
+                <a href="{% url 'budget_list' %}" class="menu-item {% if request.resolver_match.url_name == 'budget_list' %}active{% endif %}">
+                    <i class="fas fa-wallet"></i>
+                    <span>Бюджет</span>
+                </a>
+                <a href="{% url 'salaries_list' %}" class="menu-item {% if request.resolver_match.url_name == 'salaries_list' %}active{% endif %}">
+                    <i class="fas fa-money-check-alt"></i>
+                    <span>Выплаты зарплаты</span>
+                </a>
+                <a href="{% url 'credits_list' %}" class="menu-item {% if request.resolver_match.url_name == 'credits_list' %}active{% endif %}">
+                    <i class="fas fa-university"></i>
+                    <span>Кредиты</span>
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="menu-section">
+                <div class="menu-label">Аналитика</div>
+                <a href="{% url 'reports_page' %}" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and not request.GET.mode %}active{% endif %}">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Аналитика и отчеты</span>
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-label">Отчёты</div>
+                <a href="{% url 'reports_page' %}?type=raw_materials&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'raw_materials' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-boxes"></i>
+                    <span>Остатки сырья</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=products&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'products' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-coffee"></i>
+                    <span>Остатки продукции</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=purchases&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'purchases' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Закупки</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=sales&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'sales' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-hand-holding-usd"></i>
+                    <span>Продажи</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=salaries&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'salaries' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Отчёт по зарплатам</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=credits&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'credits' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-university"></i>
+                    <span>Отчёт по кредитам</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=erp_requests&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'erp_requests' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Отчёт по заявкам</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=erp_production&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'erp_production' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-industry"></i>
+                    <span>Отчёт по производству</span>
+                </a>
+                <a href="{% url 'reports_page' %}?type=erp_profit&mode=table" class="menu-item {% if request.resolver_match.url_name == 'reports_page' and request.GET.type == 'erp_profit' and request.GET.mode == 'table' %}active{% endif %}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Отчёт по прибыли ERP</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="content-wrapper">
+        <header>
+            <div class="breadcrumb">
+                <i class="fas fa-leaf" style="color: var(--primary); font-size: 20px;"></i>
+            </div>
+            
+            <div class="header-right">
+                <div class="budget-pill">
+                    <i class="fas fa-coins"></i>
+                    Бюджет: <span id="header-budget">0</span> сом
+                </div>
+                
+                <div class="user-profile">
+                    <i class="fas fa-user-circle" style="font-size: 24px; color: var(--primary);"></i>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 600; color: #1e293b;">{{ username }}</span>
+                        <span style="font-size: 11px;">{{ role }}</span>
+                    </div>
+                </div>
+
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> <span>Выйти</span>
+                </a>
+            </div>
+        </header>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    {% block scripts %}
+    {% endblock %}
+    
+    <!-- Toast Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.getElementById('mainSidebar');
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        }
+
+        // Restore Sidebar State
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            document.getElementById('mainSidebar').classList.add('collapsed');
+        }
+
+        // Global Business Formatting Helper
+        function formatBusinessVal(val, withCurrency = false) {
+            if (val === null || val === undefined) return "0";
+            let num = parseFloat(val);
+            if (isNaN(num)) return val;
+            let rounded = Math.round(num * 100) / 100;
+            let parts = rounded.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            let result = parts.join(".");
+            return withCurrency ? result + " сом" : result;
+        }
+
+        // Global Toast Notification Helper
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            toast.innerHTML = `<i class="fas ${icon}"></i> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Update header budget
+        async function updateGlobalData() {
+            try {
+                const res = await fetch('/api/dashboard_data/');
+                const data = await res.json();
+                const b = document.getElementById('header-budget');
+                if (b) b.textContent = formatBusinessVal(data.budget);
+            } catch(e) {}
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateGlobalData();
+            setInterval(updateGlobalData, 30000); // Check every 30s
+        });
+    </script>
+</body>
+</html>

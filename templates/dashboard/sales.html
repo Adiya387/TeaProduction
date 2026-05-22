@@ -1,0 +1,342 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Журнал продаж</h1>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <button class="btn-primary" style="width: auto; padding: 12px 24px; background: var(--secondary);" onclick="openModal('stockViewModal')">
+                <i class="fas fa-warehouse"></i> Наличие на складе
+            </button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск по товару..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openModal('saleModal')">
+                <i class="fas fa-plus"></i> Регистрация продажи
+            </button>
+        </div>
+    </div>
+
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <div style="max-height: 600px; overflow-y: auto;">
+            <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <thead style="background: #f8fafc; position: sticky; top: 0; z-index: 10;">
+                    <tr>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Товар</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Количество</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сумма продажи</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Прибыль</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Дата</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Сотрудник</th>
+                        <th style="padding: 16px 24px; box-shadow: 0 1px 0 var(--border-light);">Связанная заявка</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for i in items %}
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                        <td style="padding: 16px 24px;">{{ i.product.name|default:"Удалено" }}</td>
+                        <td style="padding: 16px 24px;">{{ i.quantity|floatformat:2 }}</td>
+                        <td style="padding: 16px 24px; font-weight: 700; color: var(--success);" class="format-amt">{{ i.total_amount }}</td>
+                        <td style="padding: 16px 24px; font-weight: 700; color: #10b981;" class="format-amt">{{ i.calculated_profit }}</td>
+                        <td style="padding: 16px 24px; color: var(--text-muted);">{{ i.date|date:"d.m.Y H:i" }}</td>
+                        <td style="padding: 16px 24px; font-weight: 600;">{{ i.employee|default:"—" }}</td>
+                        <td style="padding: 16px 24px;">
+                            {% if i.related_request %}
+                                <a href="/production-requests/" style="color:var(--primary); font-weight:700; text-decoration:none;">Заявка #{{ i.related_request.id }}</a>
+                            {% else %}
+                                <span style="color:var(--text-muted);">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div class="modal-overlay" id="saleModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">Регистрация продажи</h2>
+            <button class="btn-close" onclick="closeModal('saleModal')" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="saleForm">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div style="background: #f0fdf4; padding: 16px; border-radius: 12px; margin-bottom: 24px; border: 1px solid #dcfce7;">
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+                        <span style="color: #64748b; font-weight: 500;">На складе сейчас:</span>
+                        <span style="font-weight: 800; color: var(--primary);" id="modal_stock">0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px;">
+                        <span style="color: #64748b; font-weight: 500;">Остаток после продажи:</span>
+                        <span style="font-weight: 800;" id="modal_stock_remain">---</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Товар</label>
+                    <select id="sale_product" class="form-control" required onchange="updateProductStock(this.value)">
+                        <option value="" disabled selected>-- Выберите товар --</option>
+                        {% for p in products %}
+                        <option value="{{ p.id }}" data-stock="{{ p.quantity }}">{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Количество</label>
+                    <input type="number" id="sale_qty" class="form-control" step="0.01" required oninput="calcSaleTotal()" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Цена за ед. (сом)</label>
+                    <input type="number" id="sale_price" class="form-control" step="0.01" placeholder="0.00" oninput="calcSaleTotal()">
+                </div>
+                <div class="form-group">
+                    <label>Общая сумма сделки (сом)</label>
+                    <input type="number" id="sale_amount" class="form-control" step="0.01" required oninput="calcSales()" placeholder="0.00">
+                </div>
+
+                <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-top: 24px; font-size: 13px; border: 1px solid #e2e8f0;">
+                    <div style="display:flex; justify-content: space-between; margin-bottom:8px;">
+                        <span style="color: #64748b; font-weight: 500;">Чистая прибыль:</span>
+                        <span id="calc_profit" style="font-weight:800; color:var(--success);">0 сом</span>
+                    </div>
+                    <div style="display:flex; justify-content: space-between;">
+                        <span style="color: #64748b; font-weight: 500;">Новый бюджет:</span>
+                        <span id="calc_budget" style="font-weight:800;">{{ budget }} сом</span>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 24px;">
+                    <label>Продавец</label>
+                    <select id="sale_emp" class="form-control" required>
+                        <option value="" disabled selected>Выберите продавца...</option>
+                        {% for e in employees %}
+                        <option value="{{ e.id }}">{{ e }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('saleModal')">Отмена</button>
+                <button type="submit" id="btnSubmit" class="btn-primary">Оформить продажу</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Stock View Modal (Small overlay) -->
+<div class="modal-overlay" id="stockViewModal" style="z-index: 3000;">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Текущие остатки продукции</h2>
+            <button class="btn-close" onclick="closeModal('stockViewModal')" type="button"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body" id="stockListContainer" style="max-height: 400px; overflow-y: auto;">
+            <div style="padding: 20px; text-align: center; color: var(--text-muted);">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 10px;">Загрузка остатков...</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" style="width: 100%;" onclick="closeModal('stockViewModal')">
+                Вернуться к продаже
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function refreshStockView() {
+        const container = document.getElementById('stockListContainer');
+        try {
+            const res = await fetch('/api/inventory_lists/');
+            const data = await res.json();
+            container.innerHTML = '';
+            
+            data.products.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'stock-item';
+                item.style = 'display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid #f1f5f9;';
+                item.innerHTML = `
+                    <span style="font-weight: 500;">${p.name}</span>
+                    <span style="font-weight: 700; color: ${p.quantity <= 5 ? 'var(--danger)' : 'var(--success)'};">
+                        ${formatBusinessVal(p.quantity)} ${p.unit}
+                    </span>
+                `;
+                container.appendChild(item);
+            });
+        } catch (err) {
+            container.innerHTML = '<p style="color: var(--danger); text-align: center;">Ошибка загрузки</p>';
+        }
+    }
+
+    // Wrap openModal to refresh stock
+    const originalOpenModal = openModal;
+    window.openModal = function(id) {
+        if (id === 'stockViewModal') refreshStockView();
+        originalOpenModal(id);
+    };
+    let currentBudget = {{ budget }};
+    let currentStock = 0;
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function updateProductStock(val) {
+        const sel = document.getElementById('sale_product');
+        const opt = sel.options[sel.selectedIndex];
+        currentStock = parseFloat(opt.dataset.stock) || 0;
+        document.getElementById('modal_stock').textContent = formatBusinessVal(currentStock);
+        calcSales();
+    }
+
+    function calcSaleTotal() {
+        const qty = parseFloat(document.getElementById('sale_qty').value) || 0;
+        const price = parseFloat(document.getElementById('sale_price').value) || 0;
+        if (price > 0) {
+            document.getElementById('sale_amount').value = (qty * price).toFixed(2);
+        }
+        calcSales();
+    }
+
+    function calcSales() {
+        const qty = parseFloat(document.getElementById('sale_qty').value) || 0;
+        const amt = parseFloat(document.getElementById('sale_amount').value) || 0;
+        const remainStock = currentStock - qty;
+        const btn = document.getElementById('btnSubmit');
+        
+        document.getElementById('modal_stock_remain').textContent = formatBusinessVal(remainStock);
+        document.getElementById('calc_profit').textContent = formatBusinessVal(amt, true);
+        document.getElementById('calc_budget').textContent = formatBusinessVal(currentBudget + amt, true);
+
+        if (remainStock < 0) {
+            document.getElementById('modal_stock_remain').style.color = 'var(--danger)';
+            btn.disabled = true; btn.style.opacity = '0.5';
+            btn.textContent = "Недостаточно товара";
+        } else {
+            document.getElementById('modal_stock_remain').style.color = 'var(--text-main)';
+            btn.disabled = false; btn.style.opacity = '1';
+            btn.textContent = "Оформить продажу";
+        }
+    }
+
+    document.getElementById('saleForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление...';
+
+        try {
+            const payload = {
+                product_id: document.getElementById('sale_product').value,
+                quantity: document.getElementById('sale_qty').value,
+                total_amount: document.getElementById('sale_amount').value,
+                employee_id: document.getElementById('sale_emp').value
+            };
+            
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            const res = await fetch('/api/sale/', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'X-CSRFToken': csrftoken 
+                },
+                body: JSON.stringify(payload)
+            });
+            
+            let data;
+            try {
+                data = await res.json();
+            } catch (e) {
+                throw new Error('Сервер вернул некорректный ответ');
+            }
+
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message || 'Продажа успешно оформлена');
+                closeModal('saleModal');
+                document.getElementById('saleForm').reset();
+                await Promise.all([fetchSales(), updateDashboardData(), refreshProductsDropdown()]);
+            } else {
+                showToast(data.message || 'Ошибка сервера', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Сетевая ошибка', 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Оформить продажу';
+        }
+    });
+
+    async function fetchSales() {
+        const res = await fetch('/api/get_sales/');
+        const data = await res.json();
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        data.sales.forEach(s => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid var(--border-light)';
+            tr.innerHTML = `
+                <td style="padding: 16px 24px;">${s.item}</td>
+                <td style="padding: 16px 24px;">${formatBusinessVal(s.qty)}</td>
+                <td style="padding: 16px 24px; font-weight: 700; color: var(--success);">${formatBusinessVal(s.amount, true)}</td>
+                <td style="padding: 16px 24px; font-weight: 700; color: #10b981;">${formatBusinessVal(s.profit, true)}</td>
+                <td style="padding: 16px 24px; color: var(--text-muted);">${s.date}</td>
+                <td style="padding: 16px 24px; font-weight: 600;">${s.emp}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function updateDashboardData() {
+        const res = await fetch('/api/dashboard_data/');
+        const data = await res.json();
+        currentBudget = data.budget;
+        document.getElementById('header-budget').textContent = formatBusinessVal(currentBudget);
+    }
+
+    async function refreshProductsDropdown() {
+        try {
+            const res = await fetch('/api/inventory_lists/');
+            const data = await res.json();
+            const select = document.getElementById('sale_product');
+            const currentVal = select.value;
+            
+            // Keep first option
+            const firstOpt = select.options[0];
+            select.innerHTML = '';
+            select.appendChild(firstOpt);
+            
+            data.products.forEach(p => {
+                const opt = document.createElement('option');
+                opt.value = p.id;
+                opt.dataset.stock = p.quantity;
+                opt.textContent = p.name;
+                select.appendChild(opt);
+            });
+            
+            select.value = currentVal;
+            if (currentVal) updateProductStock(currentVal);
+        } catch (e) { console.error("Error refreshing products:", e); }
+    }
+
+    function filterTable() {
+        const filter = document.getElementById("tableSearch").value.toUpperCase();
+        const trs = document.getElementById("tableBody").getElementsByTagName("tr");
+        for (let tr of trs) {
+            const txt = tr.getElementsByTagName("td")[2].textContent.toUpperCase();
+            tr.style.display = txt.indexOf(filter) > -1 ? "" : "none";
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.format-amt').forEach(c => c.textContent = formatBusinessVal(c.textContent, true));
+        setInterval(fetchSales, 10000);
+        setInterval(updateDashboardData, 10000);
+    });
+</script>
+{% endblock %}

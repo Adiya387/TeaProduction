@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Управление кредитами</h1>
+        <div style="display: flex; gap: 12px;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск по сумме..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openAddModal()">
+                <i class="fas fa-university"></i> Получить новый кредит
+            </button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 16px 24px;">Дата</th>
+                    <th style="padding: 16px 24px;">Сумма (+%)</th>
+                    <th style="padding: 16px 24px;">Выплачено</th>
+                    <th style="padding: 16px 24px;">Остаток</th>
+                    <th style="padding: 16px 24px;">Посл. платеж</th>
+                    <th style="padding: 16px 24px;">Статус</th>
+                    <th style="padding: 16px 24px; text-align: right;">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items|dictsortreversed:"credit_date" %}
+                <tr style="border-bottom: 1px solid var(--border-light);">
+                    <td style="padding: 16px 24px; color: var(--text-muted);">{{ item.credit_date|date:"d.m.Y" }}</td>
+                    <td style="padding: 16px 24px; font-weight: 600;" class="format-amt">{{ item.remaining_amount|add:item.total_paid }} <span style="font-size:11px; color:var(--text-muted)">({{ item.interest_rate }}%)</span></td>
+                    <td style="padding: 16px 24px; font-weight: 600; color: var(--success);" class="format-amt">{{ item.total_paid }}</td>
+                    <td style="padding: 16px 24px; font-weight: 700; color: var(--danger);" class="format-amt">{{ item.remaining_amount }}</td>
+                    <td style="padding: 16px 24px; font-size: 13px; color: var(--text-muted);">{{ item.last_payment_date|date:"d.m.Y"|default:"—" }}</td>
+                    <td style="padding: 16px 24px;">
+                        {% if item.remaining_amount == 0 %}
+                        <span class="tag tag-success">Погашен</span>
+                        {% else %}
+                        <span class="tag tag-danger">Активный</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 16px 24px; text-align: right;">
+                        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                            <button class="btn-close" style="background:#f1f5f9; color:var(--primary);" title="Редактировать"
+                                    onclick="openEditModal('{{ item.id }}', '{{ item.amount }}', '{{ item.interest_rate }}', '{{ item.remaining_amount }}', '{{ item.credit_date|date:'Y-m-d\TH:i' }}')">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-close" style="background:#eef2ff; color:#6366f1;" title="История платежей"
+                                    onclick="showHistory('{{ item.id }}')">
+                                <i class="fas fa-history"></i>
+                            </button>
+                            {% if item.remaining_amount > 0 %}
+                            <button class="btn-primary" style="width:auto; padding:0 12px; height:32px; font-size:12px; background:#10b981; border-radius:8px;" 
+                                    onclick="openRepayModal('{{ item.id }}', '{{ item.remaining_amount }}')">
+                                <i class="fas fa-hand-holding-usd"></i> Погасить
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Main CRUD Modal -->
+<div class="modal-overlay" id="crudModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Управление кредитом</h2>
+            <button class="btn-close" onclick="closeModal('crudModal')">&times;</button>
+        </div>
+        <form method="POST" style="padding: 24px;">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="item_id">
+            <div class="form-group">
+                <label>Сумма кредита (сом)</label>
+                <input type="number" name="amount" id="item_amt" class="form-control" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Процентная ставка (%)</label>
+                <input type="number" name="interest_rate" id="item_rate" class="form-control" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Остаток к выплате (сом)</label>
+                <input type="number" name="remaining_amount" id="item_rem" class="form-control" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>Дата получения</label>
+                <input type="datetime-local" name="credit_date" id="item_date" class="form-control">
+            </div>
+            <div class="form-group" style="display:none;">
+                <input type="checkbox" name="is_closed" id="item_closed">
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top:20px;">Сохранить данные</button>
+        </form>
+    </div>
+</div>
+
+<!-- Repayment History Modal -->
+<div class="modal-overlay" id="historyModal">
+    <div class="modal-box" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2 class="modal-title">История погашений</h2>
+            <button class="btn-close" onclick="closeModal('historyModal')">&times;</button>
+        </div>
+        <div id="historyContent" style="padding: 20px;">
+            {% for item in items %}
+            <div id="hist-{{ item.id }}" class="history-list" style="display:none;">
+                {% for rep in item.repayment_history %}
+                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f1f5f9;">
+                    <div>
+                        <div style="font-weight:700; color:var(--text-main)" class="format-amt">{{ rep.amount }}</div>
+                        <div style="font-size:12px; color:var(--text-muted)">{{ rep.date|date:"d.m.Y H:i" }}</div>
+                    </div>
+                    <div style="color:var(--success); font-weight:700;"><i class="fas fa-check-double"></i></div>
+                </div>
+                {% empty %}
+                <div style="text-align:center; padding:20px; color:var(--text-muted)">Платежей еще не было</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Repayment Action Modal -->
+<div class="modal-overlay" id="repayModal">
+    <div class="modal-box" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Погашение кредита</h2>
+            <button class="btn-close" onclick="closeModal('repayModal')">&times;</button>
+        </div>
+        <div style="padding: 24px;">
+            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                <div style="font-size: 13px; color: var(--text-muted); margin-bottom: 4px;">Текущий остаток</div>
+                <div style="font-size: 20px; font-weight: 800; color: var(--danger);" id="repay-rem-text">0 сом</div>
+            </div>
+            <div class="form-group">
+                <label>Сумма платежа (сом)</label>
+                <input type="number" id="repay-amt" class="form-control" step="0.01" placeholder="Введите сумму...">
+            </div>
+            <button class="btn-primary" style="margin-top:20px;" onclick="submitRepayment()">Подтвердить платеж</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = "Получение нового кредита";
+        document.getElementById('item_id').value = "";
+        document.getElementById('item_date').value = "";
+        document.getElementById('item_rem').value = "";
+        document.getElementById('item_closed').checked = false;
+        openModal('crudModal');
+    }
+
+    function openEditModal(id, amt, rate, rem, dateStr, isClosed) {
+        document.getElementById('modalTitle').textContent = "Корректировка кредита";
+        document.getElementById('item_id').value = id;
+        document.getElementById('item_amt').value = amt;
+        document.getElementById('item_rate').value = rate;
+        document.getElementById('item_rem').value = rem;
+        document.getElementById('item_date').value = dateStr;
+        document.getElementById('item_closed').checked = isClosed;
+        openModal('crudModal');
+    }
+
+    function filterTable() {
+        const input = document.getElementById("tableSearch");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("dataTable");
+        const tr = table.getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            let found = false;
+            const tds = tr[i].getElementsByTagName("td");
+            for (let j = 0; j < tds.length; j++) {
+                if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                    found = true; break;
+                }
+            }
+            tr[i].style.display = found ? "" : "none";
+        }
+    }
+
+    function calculateRemaining() {
+        const amt = parseFloat(document.getElementById('item_amt').value) || 0;
+        const rate = parseFloat(document.getElementById('item_rate').value) || 0;
+        const res = amt + (amt * (rate / 100));
+        document.getElementById('item_rem').value = res.toFixed(2);
+    }
+
+    document.getElementById('item_amt').addEventListener('input', calculateRemaining);
+    document.getElementById('item_rate').addEventListener('input', calculateRemaining);
+
+    function showHistory(id) {
+        document.querySelectorAll('.history-list').forEach(l => l.style.display = 'none');
+        document.getElementById('hist-' + id).style.display = 'block';
+        openModal('historyModal');
+    }
+
+    let currentRepayId = null;
+
+    function openRepayModal(id, rem) {
+        currentRepayId = id;
+        document.getElementById('repay-rem-text').textContent = formatBusinessVal(rem, true);
+        document.getElementById('repay-amt').value = rem;
+        openModal('repayModal');
+    }
+
+    async function submitRepayment() {
+        const amt = document.getElementById('repay-amt').value;
+        if (!amt || isNaN(amt) || amt <= 0) {
+            showToast("Введите корректную сумму", 'error');
+            return;
+        }
+        
+        try {
+            const res = await fetch('/api/repay_credit/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+                body: JSON.stringify({ id: currentRepayId, amount: amt })
+            });
+            const data = await res.json();
+            if (data.status === 'ok') {
+                showToast("Оплата принята!");
+                closeModal('repayModal');
+                setTimeout(() => location.reload(), 800);
+            } else {
+                showToast(data.message, 'error');
+            }
+        } catch(e) { showToast("Ошибка при оплате", 'error'); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.format-amt').forEach(cell => {
+            cell.textContent = formatBusinessVal(cell.textContent.trim(), true);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 800; color: #1e293b;">Единицы измерения</h1>
+        <div style="display: flex; gap: 12px;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="tableSearch" placeholder="Поиск..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openAddModal()">
+                <i class="fas fa-plus"></i> Добавить ед. изм.
+            </button>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden;">
+        <table id="dataTable" style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+            <thead style="background: #f8fafc;">
+                <tr>
+                    <th style="padding: 16px 24px;">ID</th>
+                    <th style="padding: 16px 24px;">Название</th>
+                    <th style="padding: 16px 24px; text-align: right;">Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr style="border-bottom: 1px solid var(--border-light);">
+                    <td style="padding: 16px 24px; color: var(--text-muted);">#{{ item.id }}</td>
+                    <td style="padding: 16px 24px; font-weight: 700;">{{ item.name }}</td>
+                    <td style="padding: 16px 24px; text-align: right;">
+                        <button class="btn-close" style="background:#f1f5f9; color:var(--primary); margin-right:8px;" 
+                                onclick="openEditModal('{{ item.id }}', '{{ item.name|escapejs }}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <a href="?action=delete&id={{ item.id }}" class="btn-close" style="background:#fee2e2; color:var(--danger);" 
+                           onclick="return confirm('Удалить эту единицу измерения?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="crudModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Добавить ед. изм.</h2>
+            <button class="btn-close" onclick="closeModal('crudModal')">&times;</button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="item_id">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название (например: кг, шт, литр)</label>
+                    <input type="text" name="name" id="item_name" class="form-control" required placeholder="Введите название...">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('crudModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function openAddModal() {
+        document.getElementById('modalTitle').textContent = "Новая единица измерения";
+        document.getElementById('item_id').value = "";
+        document.getElementById('item_name').value = "";
+        openModal('crudModal');
+    }
+
+    function openEditModal(id, name) {
+        document.getElementById('modalTitle').textContent = "Изменить ед. изм.";
+        document.getElementById('item_id').value = id;
+        document.getElementById('item_name').value = name;
+        openModal('crudModal');
+    }
+
+    function filterTable() {
+        const input = document.getElementById("tableSearch");
+        const filter = input.value.toUpperCase();
+        const table = document.getElementById("dataTable");
+        const tr = table.getElementsByTagName("tr");
+        for (let i = 1; i < tr.length; i++) {
+            let found = false;
+            const tds = tr[i].getElementsByTagName("td");
+            for (let j = 0; j < tds.length; j++) {
+                if (tds[j].textContent.toUpperCase().indexOf(filter) > -1) {
+                    found = true; break;
+                }
+            }
+            tr[i].style.display = found ? "" : "none";
+        }
+    }
+</script>
+{% endblock %}

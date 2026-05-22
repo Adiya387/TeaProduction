@@ -1,0 +1,519 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <h1 style="font-size: 24px; font-weight: 700; color: var(--text-main); margin-bottom: 32px;">Дашборд Tea ERP</h1>
+
+    <!-- Stats Grid -->
+    <div class="widgets-grid">
+        <div class="widget-card" style="border-left: 4px solid var(--danger);">
+            <span class="widget-label">Расходы за месяц</span>
+            <span class="widget-value" id="monthly-expenses">0 сом</span>
+            <span class="widget-sub">За текущий календарный месяц</span>
+        </div>
+
+        <div class="widget-card" style="border-left: 4px solid var(--primary);">
+            <span class="widget-label">Прибыль (Все время)</span>
+            <span class="widget-value" id="total-profit">0 сом</span>
+            <span class="widget-sub">Доходы - (Закупки + Зарплаты)</span>
+        </div>
+
+        <div class="widget-card" style="border-left: 4px solid var(--success);">
+            <span class="widget-label">Запасы (Всего)</span>
+            <span class="widget-value" id="stock-summary">Сырье: 0 / Прод: 0</span>
+            <span class="widget-sub">Общее количество ед. на складе</span>
+        </div>
+
+        <div class="widget-card" style="border-left: 4px solid var(--warning);">
+            <span class="widget-label">Активные кредиты</span>
+            <span class="widget-value" id="active-credits">0 сом</span>
+            <span class="widget-sub">Оставшаяся сумма к выплате</span>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-grid">
+        <div class="chart-card">
+            <h3 class="chart-title"><i class="fas fa-chart-bar"></i> Доходы vs Расходы (сом)</h3>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="incomeExpenseChart"></canvas>
+            </div>
+        </div>
+        <div class="chart-card">
+            <h3 class="chart-title"><i class="fas fa-chart-line"></i> Объем производства (ед)</h3>
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="productionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Tables (Stock status) -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div class="chart-card" id="raw-table-box" style="padding: 0; overflow: hidden;">
+             <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                 <span style="font-weight: 700; color: var(--text-main);">Статус сырья</span>
+                 <input type="text" class="form-control" style="width: 200px; padding: 6px 12px; font-size: 13px;" placeholder="Поиск..." onkeyup="filterTable('rm-body', this.value)">
+             </div>
+             <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                    <thead style="background: #f8fafc; position: sticky; top: 0;">
+                        <tr>
+                            <th style="padding: 12px 24px;">Название</th>
+                            <th style="padding: 12px 24px;">Остаток</th>
+                            <th style="padding: 12px 24px;">Сумма</th>
+                            <th style="padding: 12px 24px;">Ед. изм.</th>
+                            <th style="padding: 12px 24px;">Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rm-body"></tbody>
+                </table>
+             </div>
+        </div>
+
+        <div class="chart-card" id="prod-table-box" style="padding: 0; overflow: hidden;">
+            <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: var(--text-main);">Готовая продукция</span>
+                <input type="text" class="form-control" style="width: 200px; padding: 6px 12px; font-size: 13px;" placeholder="Поиск..." onkeyup="filterTable('fp-body', this.value)">
+            </div>
+            <div style="max-height: 400px; overflow-y: auto;">
+               <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                   <thead style="background: #f8fafc; position: sticky; top: 0;">
+                        <tr>
+                           <th style="padding: 12px 24px;">Продукт</th>
+                           <th style="padding: 12px 24px;">Кол-во</th>
+                           <th style="padding: 12px 24px;">Сумма</th>
+                           <th style="padding: 12px 24px;">Статус</th>
+                        </tr>
+                   </thead>
+                   <tbody id="fp-body"></tbody>
+               </table>
+            </div>
+       </div>
+    </div>
+
+    {% if role != 'Manager' %}
+    <!-- Credits Status Table -->
+    <div class="chart-card" style="padding: 0; overflow: hidden; margin-top: 24px;">
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 700; color: var(--text-main);"><i class="fas fa-university" style="color: var(--primary); margin-right: 8px;"></i>Статус кредитов</span>
+            <a href="/credits/" style="font-size: 13px; color: var(--primary); font-weight: 600; text-decoration: none;">Управление кредитами →</a>
+        </div>
+        <div style="max-height: 280px; overflow-y: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; text-align: left;">
+                <thead style="background: #f8fafc; position: sticky; top: 0;">
+                    <tr>
+                        <th style="padding: 12px 24px;">Сумма кредита</th>
+                        <th style="padding: 12px 24px;">Остаток</th>
+                        <th style="padding: 12px 24px;">Ставка</th>
+                        <th style="padding: 12px 24px;">Статус</th>
+                    </tr>
+                </thead>
+                <tbody id="cr-body"></tbody>
+            </table>
+            <div id="cr-empty" style="display:none; text-align:center; padding: 32px; color: var(--text-muted); font-size: 14px;">
+                <i class="fas fa-check-circle" style="font-size: 24px; color: #10b981; margin-bottom: 8px; display:block;"></i>
+                Нет активных кредитов
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+
+<!-- Modals remain the same as before -->
+{% include "dashboard/modals_partial.html" %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Global State
+    let inventory = { raw_materials: [], products: [], employees: [] };
+    let incomeChart, prodChart;
+    let currentBudget = 0;
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    // Fetch lists
+    async function fetchInventory() {
+        try {
+            const res = await fetch('/api/inventory_lists/');
+            inventory = await res.json();
+            
+            const populate = (id, list) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerHTML = '<option value="" disabled selected>-- Выберите --</option>';
+                list.forEach(item => {
+                    const opt = document.createElement('option');
+                    opt.value = item.id;
+                    opt.textContent = item.name;
+                    el.appendChild(opt);
+                });
+            };
+
+            populate('pur_rm', inventory.raw_materials);
+            populate('pur_emp', inventory.employees_purchases);
+            populate('prod_product', inventory.products);
+            populate('prod_emp', inventory.employees_production);
+            populate('sale_product', inventory.products);
+            populate('sale_emp', inventory.employees_sales);
+            populate('sal_emp', inventory.employees_salaries);
+
+            // Render Product Stock in Modal
+            const stockList = document.getElementById('prodStockList');
+            if (stockList) {
+                stockList.innerHTML = '';
+                inventory.products.forEach(p => {
+                    const row = document.createElement('div');
+                    row.style.fontSize = '14px';
+                    row.style.display = 'flex';
+                    row.style.justifyContent = 'space-between';
+                    row.innerHTML = `<span>${p.name}</span> <span style="font-weight:700; color:var(--text-main)">${formatBusinessVal(p.quantity)} ед.</span>`;
+                    stockList.appendChild(row);
+                });
+            }
+        } catch(e) { console.error("Inventory load failed", e); }
+    }
+
+    async function checkIngredients(productId, qty) {
+        if (!productId) return;
+        if (qty === undefined) qty = document.getElementById('prod_qty').value || 1;
+        
+        const res = await fetch(`/api/check_ingredients/${productId}/?qty=${qty}`);
+        const data = await res.json();
+        const list = document.getElementById('ingList');
+        const box = document.getElementById('ingredientsCheck');
+        box.style.display = 'block';
+        list.innerHTML = '';
+        
+        data.ingredients.forEach(ing => {
+            const row = document.createElement('div');
+            row.style.fontSize = '13px';
+            row.style.display = 'flex';
+            row.style.justifyContent = 'space-between';
+            row.style.marginBottom = '6px';
+            
+            const color = ing.sufficient ? '#059669' : '#dc2626';
+            const missingInfo = ing.missing > 0 ? `<div style="font-size:11px; color:#dc2626; font-weight:700; margin-top:2px;">Докупить: ${formatBusinessVal(ing.missing)} ед. (≈ ${formatBusinessVal(ing.cost, true)})</div>` : '';
+            
+            row.innerHTML = `
+                <div style="width: 100%;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-weight:600; color:#475569;">${ing.name}</span>
+                        <span style="font-weight:700; color:${color}">${formatBusinessVal(ing.available)} / ${formatBusinessVal(ing.required)}</span>
+                    </div>
+                    ${missingInfo}
+                </div>`;
+            list.appendChild(row);
+        });
+
+        if (data.total_missing_cost > 0) {
+            const totalRow = document.createElement('div');
+            totalRow.style.marginTop = '12px';
+            totalRow.style.paddingTop = '12px';
+            totalRow.style.borderTop = '1px dashed #cbd5e1';
+            totalRow.style.fontSize = '13px';
+            totalRow.style.fontWeight = '800';
+            totalRow.style.color = '#dc2626';
+            totalRow.innerHTML = `<i class="fas fa-shopping-cart"></i> Итого на закупку: ≈ ${formatBusinessVal(data.total_missing_cost, true)}`;
+            list.appendChild(totalRow);
+        }
+
+        const qtyInput = document.getElementById('prod_qty');
+        const maxInfo = document.getElementById('maxProductionInfo');
+        const maxVal = document.getElementById('maxProductionValue');
+        
+        if (data.max_possible === -1) {
+            qtyInput.dataset.maxPossible = 'unlimited';
+            maxInfo.style.display = 'block';
+            maxVal.textContent = 'не ограничено (нет рецептуры)';
+            maxVal.style.color = 'var(--text-muted)';
+        } else {
+            qtyInput.dataset.maxPossible = data.max_possible;
+            maxInfo.style.display = 'block';
+            maxVal.textContent = formatBusinessVal(data.max_possible);
+            maxVal.style.color = data.max_possible > 0 ? 'var(--primary)' : 'var(--danger)';
+        }
+        
+        validateProductionQuantity();
+    }
+
+    function validateProductionQuantity() {
+        const qtyInput = document.getElementById('prod_qty');
+        const btn = document.getElementById('btnProdSubmit');
+        const maxPossible = qtyInput.dataset.maxPossible;
+        const desiredQty = parseFloat(qtyInput.value) || 0;
+        
+        if (!maxPossible) return;
+        
+        if (maxPossible === 'unlimited') {
+            btn.style.opacity = '1'; btn.disabled = false;
+            btn.textContent = 'Начать процесс';
+            qtyInput.style.borderColor = 'var(--border-light)';
+            return;
+        }
+        
+        const max = parseInt(maxPossible) || 0;
+        
+        if (max === 0) {
+            btn.style.opacity = '0.5'; btn.disabled = true;
+            btn.textContent = 'Сырье отсутствует';
+            qtyInput.style.borderColor = 'var(--danger)';
+        } else if (desiredQty > max) {
+            btn.style.opacity = '0.5'; btn.disabled = true;
+            btn.textContent = 'Превышен максимум';
+            qtyInput.style.borderColor = 'var(--danger)';
+        } else {
+            btn.style.opacity = '1'; btn.disabled = false;
+            btn.textContent = 'Начать процесс';
+            qtyInput.style.borderColor = 'var(--border-light)';
+        }
+    }
+
+    async function updateDashboard() {
+        try {
+            const res = await fetch('/api/dashboard_data/');
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            currentBudget = data.budget;
+            document.getElementById('header-budget').textContent = formatBusinessVal(data.budget);
+            document.getElementById('monthly-expenses').textContent = formatBusinessVal(data.monthly_expenses, true);
+            document.getElementById('total-profit').textContent = formatBusinessVal(data.overall_profit, true);
+            document.getElementById('stock-summary').textContent = `Сырье: ${formatBusinessVal(data.stock_rm)} / Прод: ${formatBusinessVal(data.stock_fp)}`;
+            
+            let totalCr = data.active_credits.reduce((acc, c) => acc + c.remaining, 0);
+            const creditsEl = document.getElementById('active-credits');
+            if (creditsEl) creditsEl.textContent = formatBusinessVal(totalCr, true);
+
+            if (incomeChart) {
+                incomeChart.data.datasets[0].data = [data.chart.sales_revenue, data.chart.total_expenses];
+                incomeChart.update();
+            }
+            if (prodChart) {
+                prodChart.data.labels = data.chart.labels;
+                prodChart.data.datasets[0].data = data.chart.production;
+                prodChart.update();
+            }
+
+            const rmBody = document.getElementById('rm-body');
+            rmBody.innerHTML = '';
+            data.raw_materials.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-light)';
+                const tag = item.low_stock ? 'tag-danger' : 'tag-success';
+                const status = item.low_stock ? 'Мало' : 'Норма';
+                tr.innerHTML = `<td style="padding:16px 24px;">${item.name}</td>
+                                <td style="padding:16px 24px; font-weight:600;">${formatBusinessVal(item.quantity)}</td>
+                                <td style="padding:16px 24px; font-weight:600;">${formatBusinessVal(item.total_amount, true)}</td>
+                                <td style="padding:16px 24px;">${item.unit}</td>
+                                <td style="padding:16px 24px;"><span class="tag ${tag}">${status}</span></td>`;
+                rmBody.appendChild(tr);
+            });
+
+            const fpBody = document.getElementById('fp-body');
+            fpBody.innerHTML = '';
+            data.finished_products.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.style.borderBottom = '1px solid var(--border-light)';
+                tr.innerHTML = `<td style="padding:16px 24px;">${item.name}</td>
+                                <td style="padding:16px 24px; font-weight:600;">${formatBusinessVal(item.quantity)}</td>
+                                <td style="padding:16px 24px; font-weight:600;">${formatBusinessVal(item.total_amount, true)}</td>
+                                <td style="padding:16px 24px;"><span class="tag tag-success">В наличии</span></td>`;
+                fpBody.appendChild(tr);
+            });
+
+            // --- Credits status table ---
+            const crBody = document.getElementById('cr-body');
+            const crEmpty = document.getElementById('cr-empty');
+            if (crBody && crEmpty) {
+                crBody.innerHTML = '';
+                if (data.active_credits && data.active_credits.length > 0) {
+                    crEmpty.style.display = 'none';
+                    data.active_credits.forEach(cr => {
+                        const isPaid = cr.remaining === 0;
+                        const badge = isPaid
+                            ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#dcfce7;color:#15803d;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.4px;"><i class="fas fa-check-circle"></i> Погашен</span>`
+                            : `<span style="display:inline-flex;align-items:center;gap:5px;background:#fee2e2;color:#dc2626;padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:0.4px;"><i class="fas fa-exclamation-circle"></i> Активный</span>`;
+                        const tr = document.createElement('tr');
+                        tr.style.borderBottom = '1px solid var(--border-light)';
+                        tr.innerHTML = `<td style="padding:14px 24px;font-weight:600;">${formatBusinessVal(cr.amount, true)}</td>
+                                        <td style="padding:14px 24px;font-weight:700;color:${isPaid ? '#15803d' : '#dc2626'};">${formatBusinessVal(cr.remaining, true)}</td>
+                                        <td style="padding:14px 24px;">${cr.interest}%</td>
+                                        <td style="padding:14px 24px;">${badge}</td>`;
+                        crBody.appendChild(tr);
+                    });
+                } else {
+                    crEmpty.style.display = 'block';
+                }
+            }
+
+        } catch(e) { console.error("Dashboard update error:", e); }
+    }
+
+    async function submitForm(event, url, modalId) {
+        event.preventDefault();
+        const form = event.target;
+        const btn = form.querySelector('button[type="submit"]');
+        const originalBtnText = btn.innerHTML;
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Обработка...';
+
+        try {
+            const payload = {};
+            if (modalId === 'purchaseModal') {
+                const cost = parseFloat(document.getElementById('pur_amount').value);
+                if (cost > currentBudget) {
+                    showToast("Недостаточно средств в бюджете!", 'error');
+                    btn.disabled = false; btn.innerHTML = originalBtnText;
+                    return;
+                }
+                payload.raw_material_id = document.getElementById('pur_rm').value;
+                payload.quantity = document.getElementById('pur_qty').value;
+                payload.total_amount = cost;
+                payload.employee_id = document.getElementById('pur_emp').value;
+            } else if (modalId === 'productionModal') {
+                payload.product_id = document.getElementById('prod_product').value;
+                payload.quantity = document.getElementById('prod_qty').value;
+                payload.employee_id = document.getElementById('prod_emp').value;
+            } else if (modalId === 'saleModal') {
+                payload.product_id = document.getElementById('sale_product').value;
+                payload.quantity = document.getElementById('sale_qty').value;
+                payload.total_amount = document.getElementById('sale_amount').value;
+                payload.employee_id = document.getElementById('sale_emp').value;
+            } else if (modalId === 'creditModal') {
+                payload.amount = document.getElementById('cr_amount').value;
+                payload.interest_rate = document.getElementById('cr_rate').value;
+            } else if (modalId === 'salaryModal') {
+                payload.employee_id = document.getElementById('sal_emp').value;
+                payload.amount = document.getElementById('sal_amount').value;
+            }
+
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
+                body: JSON.stringify(payload)
+            });
+            
+            let data;
+            try {
+                data = await res.json();
+            } catch (e) {
+                throw new Error("Сервер вернул некорректный ответ. Проверьте логи.");
+            }
+
+            if (res.ok && data.status === 'ok') {
+                showToast(data.message || "Операция успешно завершена!");
+                form.reset();
+                closeModal(modalId);
+                fetchInventory(); 
+                updateDashboard();
+            } else {
+                showToast(data.message || "Ошибка при выполнении операции", 'error');
+            }
+        } catch(e) {
+            console.error("Submit error:", e);
+            showToast(e.message || "Сетевая ошибка", 'error');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+        }
+    }
+
+    function initCharts() {
+        const commonOptions = { 
+            responsive: true, maintainAspectRatio: false, 
+            plugins: { 
+                legend: { labels: { font: { family: 'Outfit', weight: '600' } } },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) label += ': ';
+                            if (context.parsed.y !== null) {
+                                label += formatBusinessVal(context.parsed.y, context.chart.canvas.id === 'incomeExpenseChart');
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: { 
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: '#f1f5f9' }, 
+                    ticks: { 
+                        font: { family: 'Outfit' },
+                        callback: function(value) { return formatBusinessVal(value); }
+                    } 
+                }, 
+                x: { grid: { display: false }, ticks: { font: { family: 'Outfit' } } } 
+            }
+        };
+
+        const ctx1 = document.getElementById('incomeExpenseChart').getContext('2d');
+        incomeChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Выручка', 'Расходы'],
+                datasets: [{
+                    label: 'Финансы (сом)',
+                    data: [0, 0],
+                    backgroundColor: ['#10b981', '#ef4444'], // Green vs Red
+                    borderRadius: 8, barThickness: 60
+                }]
+            },
+            options: commonOptions
+        });
+
+        const ctx2 = document.getElementById('productionChart').getContext('2d');
+        prodChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Выпуск (ед.)',
+                    data: [],
+                    borderColor: '#059669',
+                    backgroundColor: 'rgba(5, 150, 105, 0.05)',
+                    fill: true, tension: 0.4, borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#fff'
+                }]
+            },
+            options: commonOptions
+        });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function filterTable(id, val) {
+        const rows = document.getElementById(id).getElementsByTagName('tr');
+        const f = val.toLowerCase();
+        for (let r of rows) {
+            r.style.display = r.innerText.toLowerCase().includes(f) ? '' : 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCharts();
+        fetchInventory();
+        updateDashboard();
+        setInterval(updateDashboard, 15000);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="dashboard-main fade-in">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+        <h1 style="font-weight: 700; color: #1e293b;">Рецепты и Состав</h1>
+        <button class="btn-primary" style="width: auto; padding: 12px 24px;" onclick="openAddModal()">
+            <i class="fas fa-layer-group"></i> Добавить рецепт
+        </button>
+    </div>
+
+    <!-- Accordion List -->
+    <div class="recipe-accordion-container">
+        {% for group in grouped_items %}
+        <div class="accordion-item" id="recipe-{{ group.product.id }}">
+            <div class="accordion-header" onclick="toggleAccordion('recipe-{{ group.product.id }}')">
+                <div class="header-left">
+                    <i class="fas fa-chevron-right arrow-icon"></i>
+                    <span class="product-name">{{ group.product.name }}</span>
+                    <span class="ingredient-count">({{ group.ingredients|length }} ингредиентов)</span>
+                </div>
+                <div class="header-actions" onclick="event.stopPropagation()">
+                    <button class="action-btn add" onclick="openAddModal('{{ group.product.id }}')">
+                        <i class="fas fa-plus-circle"></i> Добавить состав
+                    </button>
+                </div>
+            </div>
+            <div class="accordion-content">
+                <div class="ingredient-list-wrapper">
+                    {% if group.ingredients %}
+                    <table class="ingredient-table">
+                        <thead>
+                            <tr>
+                                <th>Ингредиент</th>
+                                <th>Расход на ед.</th>
+                                <th style="text-align: right;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ing in group.ingredients %}
+                            <tr>
+                                <td style="font-weight: 500;">{{ ing.raw_material.name }}</td>
+                                <td style="font-weight: 700; color: var(--primary);">{{ ing.quantity }} {{ ing.raw_material.unit.name }}</td>
+                                <td style="text-align: right;">
+                                    <button class="btn-close action-edit" onclick="openEditModal('{{ ing.id }}', '{{ ing.product.id }}', '{{ ing.raw_material.id }}', '{{ ing.quantity }}')">
+                                        <i class="fas fa-pen"></i>
+                                    </button>
+                                    <a href="?action=delete&id={{ ing.id }}" class="btn-close action-delete" onclick="return confirm('Удалить ингредиент из этого рецепта?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div style="padding: 24px; text-align: center; color: var(--text-muted); font-style: italic;">
+                        Состав для этого продукта еще не определен. Нажмите «Добавить состав», чтобы начать.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <style>
+        .recipe-accordion-container { display: flex; flex-direction: column; gap: 12px; }
+        .accordion-item {
+            background: #fff;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        .accordion-item:hover { border-color: var(--primary); }
+        .accordion-item.active { 
+            border-color: var(--primary); 
+            box-shadow: 0 10px 15px -3px rgba(6, 95, 70, 0.05); 
+        }
+
+        .accordion-header {
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: #fff;
+            user-select: none;
+        }
+        .header-left { display: flex; align-items: center; gap: 16px; }
+        .arrow-icon { font-size: 14px; color: var(--text-muted); transition: transform 0.3s ease; }
+        .accordion-item.active .arrow-icon { transform: rotate(90deg); color: var(--primary); }
+        .product-name { font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .ingredient-count { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+        .header-actions { display: flex; gap: 8px; }
+        .action-btn {
+            background: var(--primary-light);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            transition: all 0.2s;
+        }
+        .action-btn.add:hover { 
+            background: var(--primary); 
+            color: #fff;
+            transform: translateY(-1px);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+            background: #fafbfc;
+        }
+        .accordion-item.active .accordion-content { max-height: 1000px; border-top: 1px solid var(--border-light); }
+
+        .ingredient-list-wrapper { padding: 24px; }
+        .ingredient-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .ingredient-table th { padding: 12px 0; color: var(--text-muted); font-weight: 700; border-bottom: 2px solid var(--border-light); text-align: left; text-transform: uppercase; font-size: 11px; letter-spacing: 0.5px; }
+        .ingredient-table td { padding: 16px 0; border-bottom: 1px solid var(--border-light); }
+        
+        .action-edit { background: var(--primary-light) !important; color: var(--primary) !important; font-size: 12px !important; }
+        .action-delete { background: #fff1f2 !important; color: var(--danger) !important; font-size: 12px !important; margin-left: 6px; }
+    </style>
+</main>
+
+<!-- Modal -->
+<div class="modal-overlay" id="crudModal">
+    <div class="modal-box" style="max-width: 600px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Состав продукта</h2>
+            <button class="btn-close" onclick="closeModal('crudModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="item_id">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Выберите продукт</label>
+                    <select name="product_id" id="item_prod" class="form-control" required>
+                        <option value="" disabled selected>Выберите продукт...</option>
+                        {% for p in products %}
+                        <option value="{{ p.id }}">{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="margin-top: 24px;">
+                    <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Ингредиенты и расход</label>
+                    <div id="ingredient-rows-container" style="display: flex; flex-direction: column; gap: 12px;">
+                        <!-- Rows will be added here -->
+                    </div>
+                    
+                    <button type="button" id="btnAddRow" onclick="addIngredientRow()" style="margin-top: 16px; background: #f0fdf4; border: 2px dashed #bcf0da; color: var(--primary); width: 100%; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fas fa-plus-circle"></i> Добавить еще один ингредиент
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-close" style="width: auto; height: auto; border-radius: 8px; padding: 10px 20px;" onclick="closeModal('crudModal')">Отмена</button>
+                <button type="submit" class="btn-primary">Сохранить рецепт</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Template for ingredient row -->
+<template id="ingredient-row-template">
+    <div class="ingredient-row" style="display: flex; gap: 12px; align-items: flex-end; background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--border-light); animation: slideIn 0.3s ease;">
+        <div style="flex: 2;">
+            <label style="font-size: 11px; margin-bottom: 4px;">Сырье</label>
+            <select name="raw_material_id" class="form-control" required>
+                <option value="" disabled selected>Выберите...</option>
+                {% for rm in raw_materials %}
+                <option value="{{ rm.id }}">{{ rm.name }} ({{ rm.unit.name }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="flex: 1;">
+            <label style="font-size: 11px; margin-bottom: 4px;">Расход</label>
+            <input type="number" name="quantity" class="form-control" step="0.0001" required placeholder="0.00">
+        </div>
+        <button type="button" class="btn-remove-row" onclick="removeRow(this)" style="background: #fee2e2; border: none; width: 40px; height: 40px; border-radius: 10px; color: var(--danger); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;">
+            <i class="fas fa-trash-alt"></i>
+        </button>
+    </div>
+</template>
+
+<style>
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .btn-remove-row:hover { background: var(--danger) !important; color: #fff !important; transform: scale(1.05); }
+</style>
+
+<script>
+    function toggleAccordion(id) {
+        const item = document.getElementById(id);
+        const isActive = item.classList.contains('active');
+        if (!isActive) item.classList.add('active');
+        else item.classList.remove('active');
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+    function addIngredientRow(data = null) {
+        const container = document.getElementById('ingredient-rows-container');
+        const template = document.getElementById('ingredient-row-template');
+        const clone = template.content.cloneNode(true);
+        
+        if (data) {
+            clone.querySelector('select[name="raw_material_id"]').value = data.rmId;
+            clone.querySelector('input[name="quantity"]').value = data.qty;
+        }
+        
+        container.appendChild(clone);
+        
+        // Hide remove button if only one row left (optional)
+        updateRemoveButtons();
+    }
+
+    function removeRow(btn) {
+        const rows = document.querySelectorAll('.ingredient-row');
+        if (rows.length > 1) {
+            btn.closest('.ingredient-row').remove();
+        } else {
+            alert("В рецепте должен быть хотя бы один ингредиент!");
+        }
+    }
+
+    function updateRemoveButtons() {
+        const rows = document.querySelectorAll('.ingredient-row');
+        // If you want to prevent removing the last row, you can hide the trash icon here
+    }
+
+    function openAddModal(productId = "") {
+        document.getElementById('modalTitle').textContent = "Создание состава продукции";
+        document.getElementById('item_id').value = "";
+        document.getElementById('item_prod').value = productId || "";
+        
+        // Clear previous rows
+        document.getElementById('ingredient-rows-container').innerHTML = '';
+        addIngredientRow(); // Add one initial row
+        
+        document.getElementById('btnAddRow').style.display = 'flex';
+        openModal('crudModal');
+    }
+
+    function openEditModal(id, prodId, rmId, qty) {
+        document.getElementById('modalTitle').textContent = "Изменение ингредиента";
+        document.getElementById('item_id').value = id;
+        document.getElementById('item_prod').value = prodId;
+        
+        // Clear and add only the editing row
+        document.getElementById('ingredient-rows-container').innerHTML = '';
+        addIngredientRow({rmId: rmId, qty: qty});
+        
+        // Hide add button for editing
+        document.getElementById('btnAddRow').style.display = 'none';
+        // Hide remove button for editing
+        const removeBtn = document.querySelector('.btn-remove-row');
+        if (removeBtn) removeBtn.style.display = 'none';
+        
+        openModal('crudModal');
+    }
+
+    // Auto-open logic for new products
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const openForId = urlParams.get('open_add_for');
+        if (openForId) {
+            openAddModal(openForId);
+            const accordion = document.getElementById('recipe-' + openForId);
+            if (accordion) accordion.classList.add('active');
+        }
+    });
+</script>
+{% endblock %}
