@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ky">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Эрбол & Аделина — Үйлөнүү тойго чакыруу</title>
+  <meta name="description" content="Эрбол & Аделина үйлөнүү тойго чакыруу. 20-Октябрь 2026, Каракол шаары, Хан-Тенгри тойканасы.">
+  
+  <!-- Favicon / Touch Icon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤍</text></svg>">
+
+  <!-- Google Fonts: Cormorant Garamond, Montserrat -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Fullscreen Atmospheric Photo Backdrop (assets/photo1.png) -->
+  <div class="photo-bg-backdrop"></div>
+  <div class="photo-bg-overlay"></div>
+
+  <!-- Falling Golden Petals Canvas -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <!-- Audio Control Floating Widget -->
+  <div class="audio-widget" id="audioWidget" aria-label="Музыканы күйгүзүү / өчүрүү">
+    <button class="audio-btn" id="audioBtn" type="button">
+      <div class="sound-wave">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
+      <span class="audio-icon" id="audioIcon">🎵</span>
+    </button>
+  </div>
+
+  <!-- Background Wedding Music -->
+  <audio id="weddingAudio" loop preload="auto">
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- ==================== 1. INTRO COVER SCREEN ==================== -->
+  <section class="cover-screen" id="coverScreen">
+    <div class="intro-container">
+      <div class="intro-subtitle" data-fade>ҮЙЛӨНҮҮ ТОЙГО</div>
+      <h1 class="intro-title" data-fade>ЧАКЫРУУ</h1>
+
+      <!-- Luxury Photo Wedding Envelope -->
+      <div class="envelope-photo-card" id="envelopeWrapper" data-fade>
+        <div class="envelope-3d-inner" id="weddingEnvelope">
+          <div class="envelope-shadow-3d"></div>
+
+          <div class="envelope-photo-box">
+            <img src="assets/envelope.png" alt="Үйлөнүү тойго чакыруу конверти" class="envelope-real-img">
+            <div class="envelope-gold-shimmer"></div>
+            
+            <!-- Interactive Wax Seal Hotspot -->
+            <div class="wax-seal-hotspot" id="waxSeal" title="Чакырууну ачуу">
+              <span class="seal-glow"></span>
+              <span class="seal-sparkle">✨</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Open Button -->
+      <button class="open-btn" id="openBtn" type="button" data-fade>
+        <span class="btn-text">ЧАКЫРУУНУ АЧУУ</span>
+        <span class="btn-sparkle">✨</span>
+      </button>
+
+      <div class="scroll-hint">
+        <span class="chevron"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN INVITATION CONTENT ==================== -->
+  <main class="main-invitation hidden-invitation" id="mainInvitation">
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="section hero-section" id="heroSection">
+      <div class="hero-card">
+        <span class="hero-pretitle">ҮЙЛӨНҮҮ ТОЙ</span>
+        <h1 class="hero-couple-names">
+          <span class="name-part">Эрбол</span>
+          <span class="ampersand-serif">&</span>
+          <span class="name-part">Аделина</span>
+        </h1>
+        <div class="hero-date-badge">20 . 10 . 2026</div>
+      </div>
+    </section>
+
+    <!-- Ornamental Line Divider -->
+    <div class="editorial-divider">
+      <span class="divider-line"></span>
+      <span class="divider-symbol">✧</span>
+      <span class="divider-line"></span>
+    </div>
+
+    <!-- ==================== POEM & GUEST ADDRESS ==================== -->
+    <section class="section poem-address-section" data-reveal>
+      <!-- POEM CARD -->
+      <div class="editorial-card poem-card">
+        <div class="poem-content">
+          <p class="poem-text-line">«Аруу тилек, асыл максат жолубузда,</p>
+          <p class="poem-text-line">Баш кошуп, турмуш куруу оюбузда.</p>
+          <p class="poem-text-line">Өмүргө бирге аттандык кол кармашып,</p>
+          <p class="poem-text-line">Келиңиздер ак никелүү тоюбузга!»</p>
+        </div>
+      </div>
+
+      <!-- GUEST ADDRESS CARD -->
+      <div class="editorial-card guest-card">
+        <h2 class="guest-title">Урматтуу биздин сыйлуу конокторубуз!</h2>
+        <p class="guest-text">
+          Сиздерди балдарыбыздын үйлөнүү тоюна арналган салтанатыбызга келип, ак дасторкон үстүндө даам сызып, баталарыңызды берип, кадырлуу коногубуз болуп кетүүгө чакырабыз!
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== HOSTS SECTION ==================== -->
+    <section class="section hosts-section" data-reveal>
+      <div class="editorial-card hosts-card">
+        <span class="section-label">ТОЙ ЭЭЛЕРИ</span>
+        <h2 class="hosts-names">Жыргалбек & Венера</h2>
+      </div>
+    </section>
+
+    <!-- ==================== DATE & TIME & COUNTDOWN ==================== -->
+    <section class="section datetime-section" data-reveal>
+      <div class="section-header">
+        <span class="section-label">САЛТАНАТ КҮНҮ</span>
+        <h2 class="section-heading">Дата жана убакыт</h2>
+      </div>
+
+      <div class="editorial-card datetime-card">
+        <div class="date-hero-display">
+          <span class="date-month-name">ОКТЯБРЬ</span>
+          <span class="date-number">20</span>
+          <span class="date-year-number">2026</span>
+        </div>
+
+        <!-- ONLY 15:00 SHOWED HERE AS REQUESTED -->
+        <div class="single-time-display">
+          <span class="single-time-icon">🕒</span>
+          <span class="single-time-text">Саат 15:00</span>
+        </div>
+
+        <!-- COUNTDOWN TIMER -->
+        <div class="countdown-container" id="countdownWrap">
+          <span class="countdown-header">САЛТАНАТКА САНАК</span>
+          <div class="countdown-grid">
+            <div class="count-unit">
+              <span class="count-value" id="countDays">00</span>
+              <span class="count-unit-name">күн</span>
+            </div>
+            <div class="count-unit">
+              <span class="count-value" id="countHours">00</span>
+              <span class="count-unit-name">саат</span>
+            </div>
+            <div class="count-unit">
+              <span class="count-value" id="countMinutes">00</span>
+              <span class="count-unit-name">мүнөт</span>
+            </div>
+            <div class="count-unit">
+              <span class="count-value" id="countSeconds">00</span>
+              <span class="count-unit-name">секунд</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== PROGRAM TIMELINE (UNTOUCHED - PERFECT AS IS) ==================== -->
+    <section class="section program-section" data-reveal>
+      <div class="section-header">
+        <span class="section-label">ПРОГРАММА</span>
+        <h2 class="section-heading">Тойдун программасы</h2>
+      </div>
+
+      <div class="vertical-timeline">
+        <div class="v-timeline-line">
+          <div class="v-timeline-progress" id="timelineProgress"></div>
+        </div>
+
+        <div class="timeline-step" data-timeline-item>
+          <div class="step-dot"><span class="dot-core"></span></div>
+          <div class="editorial-card step-card">
+            <span class="step-time">15:00</span>
+            <h3 class="step-title">Конокторду тосуп алуу</h3>
+            <p class="step-desc">Куттуктоолор жана эстелик сүрөткө түшүү</p>
+          </div>
+        </div>
+
+        <div class="timeline-step" data-timeline-item>
+          <div class="step-dot"><span class="dot-core"></span></div>
+          <div class="editorial-card step-card">
+            <span class="step-time">17:00</span>
+            <h3 class="step-title">Тойдун башталышы</h3>
+            <p class="step-desc">Салтанаттуу ачылыш, ак дасторкон үстүндө сыйлануу, шоу программа</p>
+          </div>
+        </div>
+
+        <div class="timeline-step" data-timeline-item>
+          <div class="step-dot"><span class="dot-core"></span></div>
+          <div class="editorial-card step-card">
+            <span class="step-time">22:00</span>
+            <h3 class="step-title">Тойдун бүтүшү</h3>
+            <p class="step-desc">Ыраазычылык билдирүү жана салтанатты жыйынтыктоо</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VENUE / ADDRESS ==================== -->
+    <section class="section location-section" data-reveal>
+      <div class="section-header">
+        <h2 class="section-heading">ТОЙДУН ДАРЕГИ</h2>
+      </div>
+
+      <div class="editorial-card location-card">
+        <div class="loc-icon">🏛️</div>
+        <h3 class="loc-restaurant">«Хан-Тенгри» тойканасы</h3>
+        <p class="loc-city">Каракол шаары</p>
+        <p class="loc-address">Гебзе көчөсү 182 / 184</p>
+
+        <a href="https://www.google.com/maps/search/?api=1&query=Khan+Tengri+restaurant+Karakol+Gebze+182" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="editorial-map-btn">
+          <span>📍</span>
+          <span>КАРТАДАН КӨРҮҮ</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ==================== RSVP SECTION ==================== -->
+    <section class="section rsvp-section" data-reveal id="rsvpSection">
+      <div class="section-header">
+        <h2 class="section-heading">Тойго келесизби?</h2>
+      </div>
+
+      <p class="rsvp-subtext">Сиздин катышууңуз биздин кубанычыбызды арттырат 🤍</p>
+
+      <form class="editorial-card rsvp-form" id="rsvpForm"
+            name="rsvp"
+            method="POST"
+            data-netlify="true"
+            netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="rsvp">
+        <p class="hidden"><label>Don't fill this out: <input name="bot-field"></label></p>
+        <div class="form-field">
+          <label for="guestName" class="field-label">Атыңыз *</label>
+          <input type="text" id="guestName" name="guestName" required class="field-input" placeholder="Мисалы: Асан & Айгүл">
+        </div>
+
+        <div class="form-field">
+          <label class="field-label">Катышууңузду ырастаңыз:</label>
+          <div class="radio-options">
+            <label class="radio-option">
+              <input type="radio" name="attendance" value="Ооба, келем" checked>
+              <span class="radio-custom-dot"></span>
+              <span class="radio-label-text">Ооба, келем</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="attendance" value="Тилекке каршы, келе албайм">
+              <span class="radio-custom-dot"></span>
+              <span class="radio-label-text">Тилекке каршы, келе албайм</span>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="rsvp-submit-btn" id="submitBtn">
+          <span>ЖООП БЕРҮҮ</span>
+          <span>🕊️</span>
+        </button>
+      </form>
+    </section>
+
+    <!-- ==================== FINAL CLOSING SCREEN ==================== -->
+    <section class="section final-section" data-reveal>
+      <div class="editorial-card final-card">
+        <div class="final-heart-icon">🤍</div>
+        <h2 class="final-heading">Кубанычыбызга ортоктош болуңуздар!</h2>
+        <div class="final-names">Эрбол & Аделина</div>
+        <div class="final-date-tag">20 . 10 . 2026</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- RSVP SUCCESS MODAL -->
+  <div class="success-modal" id="successModal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card">
+      <div class="modal-sparkle-icon">✨</div>
+      <h3 class="modal-title">Рахмат!</h3>
+      <p class="modal-message">Жообуңуз кабыл алынды 🤍</p>
+      <a class="modal-whatsapp-btn" id="modalWhatsappBtn" target="_blank" href="#" style="display:none;">
+        <span>📲</span>
+        <span>WhatsApp аркылуу жөнөтүү</span>
+      </a>
+      <button class="modal-close-btn" id="modalCloseBtn" type="button">ЖАБУУ</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
