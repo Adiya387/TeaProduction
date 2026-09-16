@@ -1,0 +1,3 @@
+cloudflared.exe
+__pycache__/
+*.log
