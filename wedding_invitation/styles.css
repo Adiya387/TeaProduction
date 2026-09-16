@@ -480,19 +480,19 @@ body {
 }
 
 .hero-photo-wrapper {
-  margin: 20px auto 26px;
+  margin: 16px auto 22px;
   display: flex;
   justify-content: center;
 }
 
 .hero-photo-frame {
   position: relative;
-  max-width: 290px;
+  max-width: 185px;
   width: 100%;
   aspect-ratio: 3 / 4;
-  border-radius: 18px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 16px 40px rgba(45, 40, 37, 0.16);
+  box-shadow: 0 10px 30px rgba(45, 40, 37, 0.14);
   border: 1px solid var(--border-gold);
   background: #FFFDFB;
   transition: transform 0.5s ease, box-shadow 0.5s ease;
