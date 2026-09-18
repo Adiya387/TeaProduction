@@ -293,7 +293,15 @@ function initRSVPForm() {
       console.log('Local storage save error:', err);
     }
 
-    // 1. Send to FormSubmit cloud (delivered to adia.asakeeva.05@gmail.com 24/7)
+    // 1. Send to FormSubmit cloud (delivered to adia.asakeeva.05@gmail.com and Erbolasakeev1@gmail.com 24/7)
+    const emailPayload = {
+      _subject: `Эрбол & Аделина — Жаңы конок жообу: ${guestData.name}`,
+      "Коноктун аты-жөнү": guestData.name,
+      "Катышуусу": guestData.attendance,
+      "Убактысы": guestData.timestamp
+    };
+
+    // Primary email with CC
     fetch('https://formsubmit.co/ajax/adia.asakeeva.05@gmail.com', {
       method: 'POST',
       headers: { 
@@ -301,15 +309,27 @@ function initRSVPForm() {
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        _subject: `Эрбол & Аделина — Жаңы конок жообу: ${guestData.name}`,
-        "Коноктун аты-жөнү": guestData.name,
-        "Катышуусу": guestData.attendance,
-        "Убактысы": guestData.timestamp
+        ...emailPayload,
+        _cc: 'Erbolasakeev1@gmail.com'
       })
     }).then(res => res.json()).then(data => {
-      console.log('FormSubmit cloud response:', data);
+      console.log('FormSubmit cloud response (adia):', data);
     }).catch(err => {
-      console.log('FormSubmit cloud catch:', err);
+      console.log('FormSubmit cloud catch (adia):', err);
+    });
+
+    // Direct to Erbolasakeev1@gmail.com as well
+    fetch('https://formsubmit.co/ajax/Erbolasakeev1@gmail.com', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(emailPayload)
+    }).then(res => res.json()).then(data => {
+      console.log('FormSubmit cloud response (erbol):', data);
+    }).catch(err => {
+      console.log('FormSubmit cloud catch (erbol):', err);
     });
 
     // 2. Also send to local backend if running
