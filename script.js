@@ -293,15 +293,8 @@ function initRSVPForm() {
       console.log('Local storage save error:', err);
     }
 
-    // 1. Send to FormSubmit cloud (delivered to adia.asakeeva.05@gmail.com and Erbolasakeev1@gmail.com 24/7)
-    const emailPayload = {
-      _subject: `Эрбол & Аделина — Жаңы конок жообу: ${guestData.name}`,
-      "Коноктун аты-жөнү": guestData.name,
-      "Катышуусу": guestData.attendance,
-      "Убактысы": guestData.timestamp
-    };
-
-    // Primary email with CC
+    // 1. Send to FormSubmit cloud (delivered to all 3 emails 24/7)
+    // Primary: adia.asakeeva.05@gmail.com with _cc to Erbol & Venera
     fetch('https://formsubmit.co/ajax/adia.asakeeva.05@gmail.com', {
       method: 'POST',
       headers: { 
@@ -309,27 +302,35 @@ function initRSVPForm() {
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        ...emailPayload,
-        _cc: 'Erbolasakeev1@gmail.com'
+        _subject: `Эрбол & Аделина — Жаңы конок жообу: ${guestData.name}`,
+        _cc: "Erbolasakeev1@gmail.com,veneradjumabaeva80@gmail.com",
+        "Коноктун аты-жөнү": guestData.name,
+        "Катышуусу": guestData.attendance,
+        "Убактысы": guestData.timestamp
       })
     }).then(res => res.json()).then(data => {
-      console.log('FormSubmit cloud response (adia):', data);
+      console.log('FormSubmit cloud response (primary):', data);
     }).catch(err => {
-      console.log('FormSubmit cloud catch (adia):', err);
+      console.log('FormSubmit cloud catch (primary):', err);
     });
 
-    // Direct to Erbolasakeev1@gmail.com as well
-    fetch('https://formsubmit.co/ajax/Erbolasakeev1@gmail.com', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(emailPayload)
-    }).then(res => res.json()).then(data => {
-      console.log('FormSubmit cloud response (erbol):', data);
-    }).catch(err => {
-      console.log('FormSubmit cloud catch (erbol):', err);
+    // Also send directly to secondary emails for 100% reliable delivery
+    ['Erbolasakeev1@gmail.com', 'veneradjumabaeva80@gmail.com'].forEach(email => {
+      fetch(`https://formsubmit.co/ajax/${email}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `Эрбол & Аделина — Жаңы конок жообу: ${guestData.name}`,
+          "Коноктун аты-жөнү": guestData.name,
+          "Катышуусу": guestData.attendance,
+          "Убактысы": guestData.timestamp
+        })
+      }).catch(err => {
+        console.log(`FormSubmit catch (${email}):`, err);
+      });
     });
 
     // 2. Also send to local backend if running
