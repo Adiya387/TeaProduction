@@ -15,7 +15,8 @@ const WEDDING_CONFIG = {
   venueAddress: "Гебзе көчөсү, 182 / 184",
   venueName: "«Хан-Тенгри» тойканасы",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Khan+Tengri+restaurant+Karakol+Gebze+182",
-  audioSrc: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3"
+  audioSrc: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3",
+  googleSheetUrl: ""
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -333,7 +334,19 @@ function initRSVPForm() {
       });
     });
 
-    // 2. Also send to local backend if running
+    // 2. Also send to Google Sheets if configured
+    if (WEDDING_CONFIG.googleSheetUrl) {
+      fetch(WEDDING_CONFIG.googleSheetUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(guestData)
+      }).catch(err => {
+        console.log('Google Sheets error:', err);
+      });
+    }
+
+    // 3. Also send to local backend if running
     fetch('/api/rsvp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
