@@ -16,7 +16,7 @@ const WEDDING_CONFIG = {
   venueName: "«Хан-Тенгри» тойканасы",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Khan+Tengri+restaurant+Karakol+Gebze+182",
   audioSrc: "https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3",
-  googleSheetUrl: ""
+  googleSheetUrl: "https://script.google.com/macros/s/AKfycbwVP3EgErB9T4G85BvKsdGIzvvFUB_6j26xD0aD_31bS0SgElNC10lad4TzJrBdBaQ2/exec"
 };
 
 document.addEventListener('DOMContentLoaded', () => {
